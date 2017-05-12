@@ -43,7 +43,7 @@ public class Console implements Runnable{
 	private List<ConsoleQueue> updateQueues = new ArrayList<ConsoleQueue>();
 	
 	private String logFileName;
-	private long lineMax;
+//	private long lineMax;
 	
 	private boolean scrollLock;
 	private boolean showLineNumbers, lineNumbersOn;
@@ -65,7 +65,7 @@ public class Console implements Runnable{
 	
 	private StyledDocument consoleOutput;
 	private StyledDocument consoleInput;
-	private StyledDocument consoleHeader;
+//	private StyledDocument consoleHeader;
 	private StyledDocument consoleLineNumber;
 	
 	private JScrollPane consoleOutputScrollbar;
@@ -86,7 +86,7 @@ public class Console implements Runnable{
 	public Console(){
 		this.logFileName = "defaultConsoleLogFile.log";
 		this.logFilePath = "./PE/src/pe/output/logs/";
-		this.lineMax = 10;
+//		this.lineMax = 10;
 		this.textColor = Color.BLACK;
 		this.canWriteToFile = false;
 		this.finalLogFileOffset = 0;
@@ -306,7 +306,7 @@ public class Console implements Runnable{
 		
 		consolePanel = new JPanel();
 		consolePanel .setLayout(new BorderLayout(5,5));
-		Border panelBorder = BorderFactory.createLineBorder(Color.LIGHT_GREY.getJColor(), 5);
+		Border panelBorder = BorderFactory.createLineBorder(Color.LIGHT_GRAY.getJColor(), 5);
 		consolePanel.setBorder(panelBorder);
 		
 		initActionHandlers();
@@ -333,7 +333,7 @@ public class Console implements Runnable{
 		consoleOutput = consoleOutputPane.getStyledDocument();
 		
 		consoleLineNumber = consoleLineNumberPane.getStyledDocument();
-		consoleHeader = consoleHeaderPane.getStyledDocument();
+//		consoleHeader = consoleHeaderPane.getStyledDocument();
 		consoleInput = consoleInputPane.getStyledDocument();
 		
 		initAttribs();
@@ -478,10 +478,10 @@ public class Console implements Runnable{
 		return this;
 	}
 	
-	public synchronized Console setLineMax(long lineMax){
-		this.lineMax = lineMax;
-		return this;
-	}
+//	public synchronized Console setLineMax(long lineMax){
+//		this.lineMax = lineMax;
+//		return this;
+//	}
 	
 	public synchronized Console setTextColor(Color color){
 		textColor = color;

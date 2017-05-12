@@ -121,7 +121,7 @@ public class Timer {
 	 *         <code>delay</code> in seconds has passed since
 	 *         <code>lastDelay</code>; <code>false</code> otherwise.
 	 * 
-	 * @exception NullPointerException
+	 * @throws NullPointerException
 	 *                if <code>start</code> is not called before this method.
 	 * 
 	 * @see #getCurrentTime()

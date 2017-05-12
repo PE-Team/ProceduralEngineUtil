@@ -96,7 +96,7 @@ public class Mat4f {
 					);
 		}
 		
-		public FloatBuffer toFloatBuffer(FloatBuffer buffer){
+		public FloatBuffer putInBuffer(FloatBuffer buffer){
 			
 			buffer.put(s00).put(s10).put(s20).put(s30); // Column 1
 			buffer.put(s01).put(s11).put(s21).put(s31); // Column 2

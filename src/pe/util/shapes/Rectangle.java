@@ -1,5 +1,5 @@
 package pe.util.shapes;
 
-public class Rectangle {
+public class Rectangle extends Polygon{
 
 }

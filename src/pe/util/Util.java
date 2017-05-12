@@ -62,6 +62,30 @@ public class Util {
 		return count;
 	}
 
+	/**
+	 * Returns the element of type <code>T</code> in an array at the given
+	 * index. If the index is negative, then the function returns the
+	 * [<code>index</code>]th element from the end. For example,
+	 * <code>get({1, 2, 3}, 1)</code> will return 2 and
+	 * <code>get({1, 2, 3}, -1)</code> will return 3. Uses 0-indexing.
+	 * 
+	 * @param array
+	 *            The array to get the element from.
+	 * @param index
+	 *            The index of the element, may be negative.
+	 * @return The element at the given index either from the beginning or from
+	 *         the end depending on whether index is negative or not.
+	 * 
+	 * @since 1.0
+	 */
+	public static <T> T get(T[] array, int index) {
+		if (index < 0) {
+			return array[array.length - index];
+		} else {
+			return array[index];
+		}
+	}
+
 	public static boolean allCharsMatch(char charRight, char charLeft, String statementStr) {
 		int rightCharNumb = 0;
 		int leftCharNumb = 0;
