@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import pe.util.math.Vec2f;
+
 public class Util {
 
 	public static String[] defaultClassFileLocations = new String[] { "./bin", "C:/Program Files/Java/jdk1.8.0_101/" };
@@ -62,28 +64,171 @@ public class Util {
 		return count;
 	}
 
+	public static int[] getPolygonIndeces(Vec2f[] polygon) {
+		int[] indeces = new int[0];
+		int[] vertIndeces = createAutoIncrementArray(0, polygon.length);
+
+		int point = 0;
+		while (vertIndeces.length > 3) {
+			int index0 = (point) % vertIndeces.length;
+			int index1 = (point + 1) % vertIndeces.length;
+			int index2 = (point + 2) % vertIndeces.length;
+			int index3 = (point + 3) % vertIndeces.length;
+			Vec2f p1 = polygon[vertIndeces[index0]];
+			Vec2f p2 = polygon[vertIndeces[index1]];
+			Vec2f p3 = polygon[vertIndeces[index2]];
+			Vec2f p4 = polygon[vertIndeces[index3]];
+			if (doSegmentsIntersect(p1, p2, p3, p4) || doSegmentsIntersect(p1, p4, p2, p3)) {
+				if (pointWindingNumber(getMidpoint(p1, p3), polygon) == 0) {
+					indeces = append(indeces, vertIndeces[index0]);
+					indeces = append(indeces, vertIndeces[index2]);
+					indeces = append(indeces, vertIndeces[index3]);
+					vertIndeces = remove(index2, vertIndeces, new int[vertIndeces.length - 1]);
+					point = index3;
+				} else {
+					indeces = append(indeces, vertIndeces[index0]);
+					indeces = append(indeces, vertIndeces[index1]);
+					indeces = append(indeces, vertIndeces[index2]);
+					vertIndeces = remove(index1, vertIndeces, new int[vertIndeces.length - 1]);
+					point = index2;
+				}
+			} else {
+				if (pointWindingNumber(getMidpoint(p1, p3), polygon) == 0) {
+					point = index1;
+				} else {
+					indeces = append(indeces, vertIndeces[index0]);
+					indeces = append(indeces, vertIndeces[index1]);
+					indeces = append(indeces, vertIndeces[index2]);
+
+					indeces = append(indeces, vertIndeces[index0]);
+					indeces = append(indeces, vertIndeces[index2]);
+					indeces = append(indeces, vertIndeces[index3]);
+
+					vertIndeces = remove(index2, vertIndeces, new int[vertIndeces.length - 1]);
+					vertIndeces = remove(index1, vertIndeces, new int[vertIndeces.length - 1]);
+
+					point = index3;
+				}
+			}
+		}
+
+		if (vertIndeces.length == 3) {
+			indeces = append(indeces, vertIndeces[0]);
+			indeces = append(indeces, vertIndeces[1]);
+			indeces = append(indeces, vertIndeces[2]);
+		}
+
+		return indeces;
+	}
+
 	/**
-	 * Returns the element of type <code>T</code> in an array at the given
-	 * index. If the index is negative, then the function returns the
-	 * [<code>index</code>]th element from the end. For example,
-	 * <code>get({1, 2, 3}, 1)</code> will return 2 and
-	 * <code>get({1, 2, 3}, -1)</code> will return 3. Uses 0-indexing.
+	 * <p>
+	 * Creates an array of consecutive increasing integers with the first
+	 * integer having a value of <code>start</code>.
+	 * </p>
 	 * 
-	 * @param array
-	 *            The array to get the element from.
-	 * @param index
-	 *            The index of the element, may be negative.
-	 * @return The element at the given index either from the beginning or from
-	 *         the end depending on whether index is negative or not.
+	 * @param start
+	 *            The value of the first integer.
+	 * @param length
+	 *            The length of the array.
+	 * @return An array of consecutive increasing integers starting at
+	 *         <code>start</code>.
 	 * 
 	 * @since 1.0
 	 */
-	public static <T> T get(T[] array, int index) {
-		if (index < 0) {
-			return array[array.length - index];
-		} else {
-			return array[index];
+	public static int[] createAutoIncrementArray(int start, int length) {
+		int[] array = new int[length];
+		for (int i = 0; i < length; i++) {
+			array[i] = start + i;
 		}
+		return array;
+	}
+
+	/**
+	 * <p>
+	 * Returns the two-dimensional midpoint between two points.
+	 * </p>
+	 * 
+	 * @param p1
+	 *            The first point of the line segment.
+	 * @param p2
+	 *            The second point of the line segment.
+	 * @return The midpoint of the line segment.
+	 * 
+	 * @see Vec2f
+	 * 
+	 * @since 1.0
+	 */
+	public static Vec2f getMidpoint(Vec2f p1, Vec2f p2) {
+		return Vec2f.add(p1, Vec2f.subtract(p1, p2).mul(0.5f));
+	}
+
+	/**
+	 * <p>
+	 * The Winding test algorithm for a point and a polygon. Explains whether a
+	 * point is in a polygon. If the output is 0, than the point is not in the
+	 * polygon, otherwise it is.
+	 * </p>
+	 * 
+	 * @param point
+	 *            The point to be tested.
+	 * @param polygon
+	 *            The polygon to test with.
+	 * @return A value explaining if the point is in the polygon. 0 if it is
+	 *         not, anything else if it is.
+	 * 
+	 * @see #getLineSide(Vec2f, Vec2f, Vec2f)
+	 * @see Vec2f
+	 * 
+	 * @since 1.0
+	 */
+	public static int pointWindingNumber(Vec2f point, Vec2f[] polygon) {
+		int windingNumber = 0;
+
+		for (int i = 0; i < polygon.length; i++) {
+			if (polygon[i].y <= point.y) {
+				if (getl(i + 1, polygon).y > point.y)
+					if (getLineSide(point, polygon[i], getl(i + 1, polygon)) > 0)
+						windingNumber++;
+			} else {
+				if (getl(i + 1, polygon).y <= point.y)
+					if (getLineSide(point, polygon[i], getl(i + 1, polygon)) < 0)
+						windingNumber--;
+			}
+		}
+
+		return windingNumber;
+	}
+
+	/**
+	 * <p>
+	 * Returns a float designating on which side of an infinite line a point
+	 * lies.
+	 * </p>
+	 * 
+	 * @param point
+	 *            The point to be tested.
+	 * @param lp1
+	 *            The first point for the line
+	 * @param lp2
+	 *            The second point for the line
+	 * @return > 0 if the point is 'left' of the line. = 0 if the point is on
+	 *         the line. < 0 if the point is 'right' of the line.
+	 * 
+	 * @see Vec2f
+	 * 
+	 * @since 1.0
+	 */
+	public static float getLineSide(Vec2f point, Vec2f lp1, Vec2f lp2) {
+		return ((lp2.x - lp1.x) * (point.y - lp1.y) - (point.x - lp1.x) * (lp2.y - lp1.y));
+	}
+
+	public static String alignStrings(String leftAlign, String centerAlign, String rightAlign, int stringLength) {
+		int spaces = stringLength - (leftAlign.length() + centerAlign.length() + rightAlign.length() + 2);
+		spaces = spaces < 1 ? spaces = 1 : spaces;
+		String space1 = repeatCharFor(' ', spaces / 2);
+		String space2 = repeatCharFor(' ', spaces / 2 + spaces % 2);
+		return String.format("%s%s%s%s%s", leftAlign, space1, centerAlign, space2, rightAlign);
 	}
 
 	public static boolean allCharsMatch(char charRight, char charLeft, String statementStr) {
@@ -165,14 +310,6 @@ public class Util {
 		return repeatCharFor(' ', extraChars / 2) + msg + repeatCharFor(' ', (extraChars / 2) + (extraChars % 2));
 	}
 
-	public static String alignStrings(String leftAlign, String centerAlign, String rightAlign, int stringLength) {
-		int spaces = stringLength - (leftAlign.length() + centerAlign.length() + rightAlign.length() + 2);
-		spaces = spaces < 1 ? spaces = 1 : spaces;
-		String space1 = repeatCharFor(' ', spaces / 2);
-		String space2 = repeatCharFor(' ', spaces / 2 + spaces % 2);
-		return String.format("%s%s%s%s%s", leftAlign, space1, centerAlign, space2, rightAlign);
-	}
-
 	public static <T> List<T> cloneList(List<T> list1, List<T> list2) {
 		list1.clear();
 		for (int i = 0; i < list2.size(); i++) {
@@ -225,12 +362,103 @@ public class Util {
 		return count;
 	}
 
+	/**
+	 * Returns true if the line segment consisting of the first parameter and
+	 * the second parameter intersects the line segment consisting of the third
+	 * parameter and the fourth parameter.
+	 * 
+	 * @param l1p1
+	 *            The first point for the first line segment.
+	 * @param l1p2
+	 *            The second point for the first line segment.
+	 * @param l2p1
+	 *            The first point for the second line segment.
+	 * @param l2p2
+	 *            The second point for the second line segment.
+	 * 
+	 * @return Whether the two line segments consisting of parameters one and
+	 *         two, and, three and four respectively, intersect.
+	 * 
+	 * @see Vec2f
+	 * 
+	 * @since 1.0
+	 */
+	public static boolean doSegmentsIntersect(Vec2f l1p1, Vec2f l1p2, Vec2f l2p1, Vec2f l2p2) {
+		Vec2f lineDir1 = Vec2f.subtract(l1p1, l1p2);
+		Vec2f lineDir2 = Vec2f.subtract(l2p1, l2p2);
+
+		float dirCrossMag = Vec2f.cross(lineDir1, lineDir2).length();
+
+		float lineDirCrossMag1 = Vec2f.cross(Vec2f.subtract(l1p1, l2p1), lineDir2).length();
+		float lineDirCrossMag2 = Vec2f.cross(Vec2f.subtract(l1p1, l2p1), lineDir1).length();
+
+		if (dirCrossMag == 0) {
+			if (lineDirCrossMag2 == 0) {
+				return true; // Colinear
+			} else {
+				return false; // Parallel
+			}
+		}
+
+		float c1 = (lineDirCrossMag1) / dirCrossMag;
+		float c2 = (lineDirCrossMag2) / dirCrossMag;
+
+		return 0 <= c1 && c1 <= 1 && 0 <= c2 && c2 <= 1;
+	}
+
 	public static boolean existsChar(String string, char character) {
 		for (int i = 0; i < string.length(); i++) {
 			if (string.charAt(i) == character)
 				return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Returns the element of type <code>T</code> in an array at the given
+	 * index. If the index is negative, then the function returns the
+	 * [<code>index</code>]th element from the end. For example,
+	 * <code>get(-1, {1, 2, 3})</code> will return 2 and
+	 * <code>get(-1, {1, 2, 3})</code> will return 3. Uses 0-indexing.
+	 * 
+	 * @param index
+	 *            The index of the element, may be negative.
+	 * @param array
+	 *            The array to get the element from.
+	 * @return The element at the given index either from the beginning or from
+	 *         the end depending on whether index is negative or not.
+	 * 
+	 * @since 1.0
+	 */
+	public static <T> T get(int index, T[] array) {
+		if (index < 0) {
+			return array[array.length - index];
+		} else {
+			return array[index];
+		}
+	}
+
+	/**
+	 * Returns the element of type <code>T</code> in an array at the given
+	 * index. If the index is negative, then the function returns the
+	 * [<code>index</code>]th element from the end. For example,
+	 * <code>get(-1, {1, 2, 3})</code> will return 2 and
+	 * <code>get(-1, {1, 2, 3})</code> will return 3. Uses 0-indexing.
+	 * Additionally, if the index is outside of the array, it will loop back to
+	 * be in the array.
+	 * 
+	 * @param index
+	 *            The index of the element, may be negative or outside the
+	 *            array.
+	 * @param array
+	 *            The array to get the element from.
+	 * @return The element at the given index either from the beginning or from
+	 *         the end depending on whether index is negative or not.
+	 * 
+	 * @since 1.0
+	 */
+	public static <T> T getl(int index, T[] array) {
+		return array[index % array.length];
 	}
 
 	public static Class<?> getClassByName(String className, String[] classFileLocations) {
@@ -1061,6 +1289,86 @@ public class Util {
 		return result;
 	}
 
+	/**
+	 * <p>
+	 * Removes the specified element at <code>index</code> in <code>array</code>
+	 * and puts the new array into <code>result</code>.
+	 * </p>
+	 * 
+	 * @param index
+	 *            The index at which to remove an element.
+	 * @param array
+	 *            The array the element is being removed from.
+	 * @param result
+	 *            The array where the change will be stored.
+	 * @return The resulting array.
+	 * 
+	 * @throws IllegalArgumentException
+	 *             If <codeindex</code> is not a valid index for
+	 *             <code>result</code> or if <code>result</code>'s length is not
+	 *             one less than <code>array</code>.
+	 * 
+	 * @since 1.0
+	 */
+	public static int[] remove(int index, int[] array, int[] result) {
+		if (index > result.length - 1)
+			throw new IllegalArgumentException("The specified index cannot be an index outside of 'result'.");
+
+		if (result.length + 1 != array.length)
+			throw new IllegalArgumentException(
+					"The 'result' array must be an array with a length one less than 'array'.");
+
+		for (int i = 0; i < index; i++) {
+			result[i] = array[i];
+		}
+
+		for (int i = index + 1; i < result.length; i++) {
+			result[i] = array[i];
+		}
+
+		return result;
+	}
+
+	/**
+	 * <p>
+	 * Removes the specified element at <code>index</code> in <code>array</code>
+	 * and puts the new array into <code>result</code>.
+	 * </p>
+	 * 
+	 * @param index
+	 *            The index at which to remove an element.
+	 * @param array
+	 *            The array the element is being removed from.
+	 * @param result
+	 *            The array where the change will be stored.
+	 * @return The resulting array.
+	 * 
+	 * @throws IllegalArgumentException
+	 *             If <codeindex</code> is not a valid index for
+	 *             <code>result</code> or if <code>result</code>'s length is not
+	 *             one less than <code>array</code>.
+	 * 
+	 * @since 1.0
+	 */
+	public static <T> T[] remove(int index, T[] array, T[] result) {
+		if (index > result.length - 1)
+			throw new IllegalArgumentException("The specified index cannot be an index outside of 'result'.");
+
+		if (result.length + 1 != array.length)
+			throw new IllegalArgumentException(
+					"The 'result' array must be an array with a length one less than 'array'.");
+
+		for (int i = 0; i < index; i++) {
+			result[i] = array[i];
+		}
+
+		for (int i = index + 1; i < result.length; i++) {
+			result[i] = array[i];
+		}
+
+		return result;
+	}
+
 	public static String[] remove(String[] array, int start, int length) {
 		String[] temp = new String[array.length - length];
 		int index = 0;
@@ -1109,6 +1417,19 @@ public class Util {
 
 	public static String rightAlignString(String msg, int stringLength) {
 		return repeatCharFor(' ', stringLength - msg.length()) + msg;
+	}
+
+	public static String arrayToString(int[] array) {
+		StringBuilder sb = new StringBuilder();
+		sb.append('[');
+		for (int numb : array) {
+			sb.append(numb);
+			sb.append(", ");
+		}
+		sb.deleteCharAt(sb.length() - 1);
+		sb.deleteCharAt(sb.length() - 1);
+		sb.append(']');
+		return sb.toString();
 	}
 
 	public static List<?> shrinkList(List<?> list, int min, int max) {

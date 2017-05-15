@@ -22,6 +22,21 @@ public class Vec2f {
 		return this;
 	}
 
+	/**
+	 * Returns true if both the <code>x</code> and the <code>y</code> value for
+	 * the input vector are the same for this vector.
+	 * 
+	 * @param vec The vector to compare to.
+	 * @return Whether the input vector is equal to this vector.
+	 * 
+	 * @since 1.0
+	 */
+	@Override
+	public boolean equals(Object vector) {
+		Vec2f vec = (Vec2f) vector;
+		return x == vec.x && y == vec.y;
+	}
+
 	public static Vec2f add(Vec2f vec1, Vec2f vec2) {
 		return new Vec2f(vec2.x + vec1.x, vec2.y + vec1.y);
 	}
@@ -57,7 +72,8 @@ public class Vec2f {
 	 * case of a one-line use, the function also returns the buffer. Note that
 	 * the buffer will still need to be flipped afterwards.
 	 * 
-	 * @param buffer the <code>FloatBuffer</code> to put the vector in.
+	 * @param buffer
+	 *            the <code>FloatBuffer</code> to put the vector in.
 	 * 
 	 * @see #x
 	 * @see #y
