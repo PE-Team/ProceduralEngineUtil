@@ -7,7 +7,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -15,7 +19,7 @@ import pe.util.math.Vec2f;
 
 public class Util {
 
-	public static String[] defaultClassFileLocations = new String[] { "./bin", "C:/Program Files/Java/jdk1.8.0_101/" };
+	public static final String[] defaultClassFileLocations = new String[] { "./bin", "C:/Program Files/Java/jdk1.8.0_101/" };
 
 	public static final float NANO = 1000000000.0f;
 	public static final int FLOAT_BYTE_SIZE = 4;
@@ -62,165 +66,6 @@ public class Util {
 			count += array[i];
 		}
 		return count;
-	}
-
-	public static int[] getPolygonIndeces(Vec2f[] polygon) {
-		int[] indeces = new int[0];
-		int[] vertIndeces = createAutoIncrementArray(0, polygon.length);
-
-		int point = 0;
-		while (vertIndeces.length > 3) {
-			int index0 = (point) % vertIndeces.length;
-			int index1 = (point + 1) % vertIndeces.length;
-			int index2 = (point + 2) % vertIndeces.length;
-			int index3 = (point + 3) % vertIndeces.length;
-			Vec2f p1 = polygon[vertIndeces[index0]];
-			Vec2f p2 = polygon[vertIndeces[index1]];
-			Vec2f p3 = polygon[vertIndeces[index2]];
-			Vec2f p4 = polygon[vertIndeces[index3]];
-			if (doSegmentsIntersect(p1, p2, p3, p4) || doSegmentsIntersect(p1, p4, p2, p3)) {
-				if (pointWindingNumber(getMidpoint(p1, p3), polygon) == 0) {
-					indeces = append(indeces, vertIndeces[index0]);
-					indeces = append(indeces, vertIndeces[index2]);
-					indeces = append(indeces, vertIndeces[index3]);
-					vertIndeces = remove(index2, vertIndeces, new int[vertIndeces.length - 1]);
-					point = index3;
-				} else {
-					indeces = append(indeces, vertIndeces[index0]);
-					indeces = append(indeces, vertIndeces[index1]);
-					indeces = append(indeces, vertIndeces[index2]);
-					vertIndeces = remove(index1, vertIndeces, new int[vertIndeces.length - 1]);
-					point = index2;
-				}
-			} else {
-				if (pointWindingNumber(getMidpoint(p1, p3), polygon) == 0) {
-					point = index1;
-				} else {
-					indeces = append(indeces, vertIndeces[index0]);
-					indeces = append(indeces, vertIndeces[index1]);
-					indeces = append(indeces, vertIndeces[index2]);
-
-					indeces = append(indeces, vertIndeces[index0]);
-					indeces = append(indeces, vertIndeces[index2]);
-					indeces = append(indeces, vertIndeces[index3]);
-
-					vertIndeces = remove(index2, vertIndeces, new int[vertIndeces.length - 1]);
-					vertIndeces = remove(index1, vertIndeces, new int[vertIndeces.length - 1]);
-
-					point = index3;
-				}
-			}
-		}
-
-		if (vertIndeces.length == 3) {
-			indeces = append(indeces, vertIndeces[0]);
-			indeces = append(indeces, vertIndeces[1]);
-			indeces = append(indeces, vertIndeces[2]);
-		}
-
-		return indeces;
-	}
-
-	/**
-	 * <p>
-	 * Creates an array of consecutive increasing integers with the first
-	 * integer having a value of <code>start</code>.
-	 * </p>
-	 * 
-	 * @param start
-	 *            The value of the first integer.
-	 * @param length
-	 *            The length of the array.
-	 * @return An array of consecutive increasing integers starting at
-	 *         <code>start</code>.
-	 * 
-	 * @since 1.0
-	 */
-	public static int[] createAutoIncrementArray(int start, int length) {
-		int[] array = new int[length];
-		for (int i = 0; i < length; i++) {
-			array[i] = start + i;
-		}
-		return array;
-	}
-
-	/**
-	 * <p>
-	 * Returns the two-dimensional midpoint between two points.
-	 * </p>
-	 * 
-	 * @param p1
-	 *            The first point of the line segment.
-	 * @param p2
-	 *            The second point of the line segment.
-	 * @return The midpoint of the line segment.
-	 * 
-	 * @see Vec2f
-	 * 
-	 * @since 1.0
-	 */
-	public static Vec2f getMidpoint(Vec2f p1, Vec2f p2) {
-		return Vec2f.add(p1, Vec2f.subtract(p1, p2).mul(0.5f));
-	}
-
-	/**
-	 * <p>
-	 * The Winding test algorithm for a point and a polygon. Explains whether a
-	 * point is in a polygon. If the output is 0, than the point is not in the
-	 * polygon, otherwise it is.
-	 * </p>
-	 * 
-	 * @param point
-	 *            The point to be tested.
-	 * @param polygon
-	 *            The polygon to test with.
-	 * @return A value explaining if the point is in the polygon. 0 if it is
-	 *         not, anything else if it is.
-	 * 
-	 * @see #getLineSide(Vec2f, Vec2f, Vec2f)
-	 * @see Vec2f
-	 * 
-	 * @since 1.0
-	 */
-	public static int pointWindingNumber(Vec2f point, Vec2f[] polygon) {
-		int windingNumber = 0;
-
-		for (int i = 0; i < polygon.length; i++) {
-			if (polygon[i].y <= point.y) {
-				if (getl(i + 1, polygon).y > point.y)
-					if (getLineSide(point, polygon[i], getl(i + 1, polygon)) > 0)
-						windingNumber++;
-			} else {
-				if (getl(i + 1, polygon).y <= point.y)
-					if (getLineSide(point, polygon[i], getl(i + 1, polygon)) < 0)
-						windingNumber--;
-			}
-		}
-
-		return windingNumber;
-	}
-
-	/**
-	 * <p>
-	 * Returns a float designating on which side of an infinite line a point
-	 * lies.
-	 * </p>
-	 * 
-	 * @param point
-	 *            The point to be tested.
-	 * @param lp1
-	 *            The first point for the line
-	 * @param lp2
-	 *            The second point for the line
-	 * @return > 0 if the point is 'left' of the line. = 0 if the point is on
-	 *         the line. < 0 if the point is 'right' of the line.
-	 * 
-	 * @see Vec2f
-	 * 
-	 * @since 1.0
-	 */
-	public static float getLineSide(Vec2f point, Vec2f lp1, Vec2f lp2) {
-		return ((lp2.x - lp1.x) * (point.y - lp1.y) - (point.x - lp1.x) * (lp2.y - lp1.y));
 	}
 
 	public static String alignStrings(String leftAlign, String centerAlign, String rightAlign, int stringLength) {
@@ -285,6 +130,31 @@ public class Util {
 		return result.toArray(array);
 	}
 
+	/**
+	 * <p>
+	 * Returns true if all of the vectors supplied to colinear to every other
+	 * one, false otherwise. To be colinear means that the given points all lie
+	 * on the same line.
+	 * </p>
+	 * 
+	 * @param vectors
+	 *            The points to test.
+	 * @return Whether all of the vectors given are colinear or not.
+	 * 
+	 * @since 1.0
+	 */
+	public static boolean areColinear(Vec2f... vectors) {
+		if (vectors.length < 1)
+			return true;
+
+		Vec2f direction = Vec2f.subtract(vectors[0], vectors[1]);
+		for (int i = 1; i < vectors.length - 1; i++) {
+			if (!direction.equals(Vec2f.subtract(vectors[i], vectors[i + 1])))
+				return false;
+		}
+		return true;
+	}
+
 	public static <T> List<T> arrayToList(T[] array) {
 		List<T> result = new ArrayList<>();
 		if (array == null)
@@ -293,6 +163,19 @@ public class Util {
 			result.add(array[i]);
 		}
 		return result;
+	}
+
+	public static String arrayToString(int[] array) {
+		StringBuilder sb = new StringBuilder();
+		sb.append('[');
+		for (int numb : array) {
+			sb.append(numb);
+			sb.append(", ");
+		}
+		sb.deleteCharAt(sb.length() - 1);
+		sb.deleteCharAt(sb.length() - 1);
+		sb.append(']');
+		return sb.toString();
 	}
 
 	public static <T> String arrayToString(T[] array) {
@@ -308,6 +191,36 @@ public class Util {
 	public static String centerAlignString(String msg, int stringLength) {
 		int extraChars = (int) (stringLength - msg.length());
 		return repeatCharFor(' ', extraChars / 2) + msg + repeatCharFor(' ', (extraChars / 2) + (extraChars % 2));
+	}
+
+	/**
+	 * <p>
+	 * Returns a value based on how "clockwise" a polygon is.
+	 * </p>
+	 * <ul>
+	 * <li>> 1: The polygon is generally clockwise.
+	 * <li>= 1: The polygon is neither clockwise nor counter-clockwise.
+	 * <li>< 1: The polygon is generally counter-clockwise.
+	 * </ul>
+	 * <p>
+	 * If the edges of a polygon generally turn "right" to form the next edge,
+	 * the the polygon is considered clockwise.
+	 * </p>
+	 * 
+	 * @param polygon
+	 *            The polygon to determine how "clockwise" it is.
+	 * @return A value determining how "clockwise" the polygon is.
+	 * 
+	 * @since 1.0
+	 */
+	public static float clockwisePolygon(Vec2f[] polygon) {
+		float sum = 0;
+		for (int i = 0; i < polygon.length; i++) {
+			Vec2f nextVec = getl(i + 1, polygon);
+			float add = (nextVec.x - polygon[i].x) * (nextVec.y + polygon[i].y);
+			sum += add;
+		}
+		return sum;
 	}
 
 	public static <T> List<T> cloneList(List<T> list1, List<T> list2) {
@@ -363,6 +276,29 @@ public class Util {
 	}
 
 	/**
+	 * <p>
+	 * Creates an array of consecutive increasing integers with the first
+	 * integer having a value of <code>start</code>.
+	 * </p>
+	 * 
+	 * @param start
+	 *            The value of the first integer.
+	 * @param length
+	 *            The length of the array.
+	 * @return An array of consecutive increasing integers starting at
+	 *         <code>start</code>.
+	 * 
+	 * @since 1.0
+	 */
+	public static int[] createAutoIncrementArray(int start, int length) {
+		int[] array = new int[length];
+		for (int i = 0; i < length; i++) {
+			array[i] = start + i;
+		}
+		return array;
+	}
+
+	/**
 	 * Returns true if the line segment consisting of the first parameter and
 	 * the second parameter intersects the line segment consisting of the third
 	 * parameter and the fourth parameter.
@@ -415,6 +351,132 @@ public class Util {
 	}
 
 	/**
+	 * Will generate a set of indices which indicate which vertices of a
+	 * polygon, when connected with two others, will triangulate the polygon
+	 * (turn the polygon into a bunch of triangles). The indices will be in a
+	 * set of 3 integers so that the number of triangles that the indices would
+	 * create is equal to indices.length / 3.
+	 * 
+	 * @param polygon
+	 *            The polygon to generate the indices of.
+	 * @return The set of indices needed to triangulate this polygon.
+	 * 
+	 * @since 1.0
+	 */
+	public static int[] generatePolygonIndeces(Vec2f[] polygon) {
+		if (polygon.length < 3)
+			throw new IllegalArgumentException("A polygon must have at least 3 sides.");
+
+		/* Step 0: Create resultant variables */
+		Set<int[]> indecesSet = new HashSet<int[]>();
+		Map<Vec2f, Integer> vertexIndeces = new HashMap<Vec2f, Integer>();
+		Map<Vec2f, Vec2f> vertexOrderings = new HashMap<Vec2f, Vec2f>();
+
+		for (int i = 0; i < polygon.length; i++) {
+			vertexIndeces.put(polygon[i], i);
+
+			vertexOrderings.put(polygon[i], getl(i + 1, polygon));
+		}
+
+		/*
+		 * Step 1: Generate polygon edge normal multiplier to determine polygon
+		 * direction
+		 */
+		int normalMult = clockwisePolygon(polygon) > 0 ? -1 : 1;
+
+		/*
+		 * Step 2: Go around polygon connecting triangles by using the edge
+		 * direction to detect if triangle is in the polygon or not
+		 */
+		Vec2f vertex1 = polygon[0];
+		while (vertexOrderings.size() > 3) {
+			Vec2f vertex2 = vertexOrderings.get(vertex1);
+			Vec2f vertex3 = vertexOrderings.get(vertex2);
+			Vec2f vertex4 = vertexOrderings.get(vertex3);
+
+			int edge13NormalMult = clockwisePolygon(new Vec2f[] { vertex1, vertex2, vertex3 }) < 0 ? -1 : 1;
+			Vec2f edge13Normal = getEdgeNormal(vertex1, vertex3, edge13NormalMult);
+
+			Vec2f polygon12Normal = getEdgeNormal(vertex1, vertex2, normalMult);
+			Vec2f polygon23Normal = getEdgeNormal(vertex2, vertex3, normalMult);
+			Vec2f polygon123NormalAvg = Vec2f.add(polygon12Normal, polygon23Normal).unit();
+
+			if (doSegmentsIntersect(vertex1, vertex2, vertex3, vertex4)
+					|| doSegmentsIntersect(vertex1, vertex4, vertex2, vertex3)) {
+				if (areColinear(vertex1, vertex2, vertex3) || areColinear(vertex2, vertex3, vertex4)) {
+					/*
+					 * Case 1:: The vertices are colinear so another triangle
+					 * should be found
+					 */
+
+					vertex1 = vertex2;
+				} else if (Vec2f.dot(polygon123NormalAvg, edge13Normal) < 0) {
+					/* Case 2: The triangle 1 -> 2 -> 3 is in the polygon */
+
+					indecesSet.add(new int[] { vertexIndeces.get(vertex1), vertexIndeces.get(vertex2),
+							vertexIndeces.get(vertex3) });
+
+					vertexOrderings.remove(vertex2);
+					vertexOrderings.replace(vertex1, vertex3);
+				} else {
+					/* Case 3: The triangle 2 -> 3 -> 4 is in the polygon */
+
+					indecesSet.add(new int[] { vertexIndeces.get(vertex2), vertexIndeces.get(vertex3),
+							vertexIndeces.get(vertex4) });
+
+					vertexOrderings.remove(vertex3);
+					vertexOrderings.replace(vertex2, vertex4);
+				}
+			} else {
+				if (Vec2f.dot(polygon123NormalAvg, edge13Normal) < 0) {
+					/*
+					 * Case 4: The quadrilateral 1 -> 2 -> 3 -> 4 is in the
+					 * polygon
+					 */
+
+					indecesSet.add(new int[] { vertexIndeces.get(vertex1), vertexIndeces.get(vertex2),
+							vertexIndeces.get(vertex3) });
+					indecesSet.add(new int[] { vertexIndeces.get(vertex1), vertexIndeces.get(vertex3),
+							vertexIndeces.get(vertex4) });
+
+					vertexOrderings.remove(vertex2);
+					vertexOrderings.remove(vertex3);
+					vertexOrderings.replace(vertex1, vertex4);
+				} else {
+					/*
+					 * Case 5: No combination of these vertices are in the final
+					 * triangluation
+					 */
+
+					vertex1 = vertex2;
+				}
+			}
+		}
+
+		/* Step 3: Resolve the final triangle (or skip if it is a line) */
+		if (vertexOrderings.size() == 3) {
+			Vec2f vertex2 = vertexOrderings.get(vertex1);
+			Vec2f vertex3 = vertexOrderings.get(vertex2);
+
+			indecesSet.add(
+					new int[] { vertexIndeces.get(vertex1), vertexIndeces.get(vertex2), vertexIndeces.get(vertex3) });
+		}
+
+		/* Step 4: Turn the set of sets of indeces into a single array */
+		int[] finalIndeces = new int[indecesSet.size() * 3];
+		int index = 0;
+		for (int[] indexSet : indecesSet) {
+			finalIndeces[index] = indexSet[0];
+			finalIndeces[index + 1] = indexSet[1];
+			finalIndeces[index + 2] = indexSet[2];
+
+			index += 3;
+		}
+
+		return finalIndeces;
+	}
+
+	/**
 	 * Returns the element of type <code>T</code> in an array at the given
 	 * index. If the index is negative, then the function returns the
 	 * [<code>index</code>]th element from the end. For example,
@@ -436,29 +498,6 @@ public class Util {
 		} else {
 			return array[index];
 		}
-	}
-
-	/**
-	 * Returns the element of type <code>T</code> in an array at the given
-	 * index. If the index is negative, then the function returns the
-	 * [<code>index</code>]th element from the end. For example,
-	 * <code>get(-1, {1, 2, 3})</code> will return 2 and
-	 * <code>get(-1, {1, 2, 3})</code> will return 3. Uses 0-indexing.
-	 * Additionally, if the index is outside of the array, it will loop back to
-	 * be in the array.
-	 * 
-	 * @param index
-	 *            The index of the element, may be negative or outside the
-	 *            array.
-	 * @param array
-	 *            The array to get the element from.
-	 * @return The element at the given index either from the beginning or from
-	 *         the end depending on whether index is negative or not.
-	 * 
-	 * @since 1.0
-	 */
-	public static <T> T getl(int index, T[] array) {
-		return array[index % array.length];
 	}
 
 	public static Class<?> getClassByName(String className, String[] classFileLocations) {
@@ -687,6 +726,32 @@ public class Util {
 		return finalConstructors;
 	}
 
+	/**
+	 * <p>
+	 * Returns a normal vector to the edge made from <code>v1</code> and
+	 * <code>v2</code>.
+	 * </p>
+	 * 
+	 * @param v1
+	 *            The first vertex of the edge.
+	 * @param v2
+	 *            The second vertex of the edge.
+	 * @param normalMult
+	 *            Either 1 or -1. Will change the direction of the normal.
+	 *            Related to determining the normal for a polygon edge.
+	 * @return A vector normal to the edge.
+	 * 
+	 * @see #clockwisePolygon(Vec2f[])
+	 * 
+	 * @since 1.0
+	 */
+	public static Vec2f getEdgeNormal(Vec2f v1, Vec2f v2, int normalMult) {
+		Vec2f edgeDir = Vec2f.subtract(v1, v2);
+		Vec2f edgeNormal = new Vec2f(-edgeDir.y, edgeDir.x).unit();
+
+		return edgeNormal.mul(normalMult);
+	}
+
 	public static int getFirstIndexAfter(int index, String strPart, String str) {
 		for (int i = index + 1; i < str.length() - strPart.length() + 1; i++) {
 			if (str.charAt(i) == strPart.charAt(0)) {
@@ -721,6 +786,29 @@ public class Util {
 		return -1;
 	}
 
+	/**
+	 * Returns the element of type <code>T</code> in an array at the given
+	 * index. If the index is negative, then the function returns the
+	 * [<code>index</code>]th element from the end. For example,
+	 * <code>get(-1, {1, 2, 3})</code> will return 2 and
+	 * <code>get(-1, {1, 2, 3})</code> will return 3. Uses 0-indexing.
+	 * Additionally, if the index is outside of the array, it will loop back to
+	 * be in the array.
+	 * 
+	 * @param index
+	 *            The index of the element, may be negative or outside the
+	 *            array.
+	 * @param array
+	 *            The array to get the element from.
+	 * @return The element at the given index either from the beginning or from
+	 *         the end depending on whether index is negative or not.
+	 * 
+	 * @since 1.0
+	 */
+	public static <T> T getl(int index, T[] array) {
+		return array[index % array.length];
+	}
+
 	public static int getLastIndexBefore(int index, String strPart, String str) {
 		for (int i = index - strPart.length(); i >= 0; i--) {
 			if (str.charAt(i) == strPart.charAt(0)) {
@@ -742,6 +830,29 @@ public class Util {
 		return getLastIndexBefore(str.length(), strPart, str);
 	}
 
+	/**
+	 * <p>
+	 * Returns a float designating on which side of an infinite line a point
+	 * lies.
+	 * </p>
+	 * 
+	 * @param point
+	 *            The point to be tested.
+	 * @param lp1
+	 *            The first point for the line
+	 * @param lp2
+	 *            The second point for the line
+	 * @return > 0 if the point is 'left' of the line. = 0 if the point is on
+	 *         the line. < 0 if the point is 'right' of the line.
+	 * 
+	 * @see Vec2f
+	 * 
+	 * @since 1.0
+	 */
+	public static float getLineSide(Vec2f point, Vec2f lp1, Vec2f lp2) {
+		return ((lp2.x - lp1.x) * (point.y - lp1.y) - (point.x - lp1.x) * (lp2.y - lp1.y));
+	}
+
 	public static Method getMethod(Class<?> className, String name, List<Class<?>> paramClasses) {
 		try {
 			return className.getDeclaredMethod(name, paramClasses.toArray(new Class<?>[0]));
@@ -750,6 +861,25 @@ public class Util {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	/**
+	 * <p>
+	 * Returns the two-dimensional midpoint between two points.
+	 * </p>
+	 * 
+	 * @param p1
+	 *            The first point of the line segment.
+	 * @param p2
+	 *            The second point of the line segment.
+	 * @return The midpoint of the line segment.
+	 * 
+	 * @see Vec2f
+	 * 
+	 * @since 1.0
+	 */
+	public static Vec2f getMidpoint(Vec2f p1, Vec2f p2) {
+		return Vec2f.add(p1, Vec2f.subtract(p1, p2).mul(0.5f));
 	}
 
 	public static int[] getNewLineIndeces(String string) {
@@ -1291,6 +1421,43 @@ public class Util {
 
 	/**
 	 * <p>
+	 * The Winding test algorithm for a point and a polygon. Explains whether a
+	 * point is in a polygon. If the output is 0, than the point is not in the
+	 * polygon, otherwise it is.
+	 * </p>
+	 * 
+	 * @param point
+	 *            The point to be tested.
+	 * @param polygon
+	 *            The polygon to test with.
+	 * @return A value explaining if the point is in the polygon. 0 if it is
+	 *         not, anything else if it is.
+	 * 
+	 * @see #getLineSide(Vec2f, Vec2f, Vec2f)
+	 * @see Vec2f
+	 * 
+	 * @since 1.0
+	 */
+	public static int pointWindingNumber(Vec2f point, Vec2f[] polygon) {
+		int windingNumber = 0;
+
+		for (int i = 0; i < polygon.length; i++) {
+			if (polygon[i].y <= point.y) {
+				if (getl(i + 1, polygon).y > point.y)
+					if (getLineSide(point, polygon[i], getl(i + 1, polygon)) > 0)
+						windingNumber++;
+			} else {
+				if (getl(i + 1, polygon).y <= point.y)
+					if (getLineSide(point, polygon[i], getl(i + 1, polygon)) < 0)
+						windingNumber--;
+			}
+		}
+
+		return windingNumber;
+	}
+
+	/**
+	 * <p>
 	 * Removes the specified element at <code>index</code> in <code>array</code>
 	 * and puts the new array into <code>result</code>.
 	 * </p>
@@ -1417,19 +1584,6 @@ public class Util {
 
 	public static String rightAlignString(String msg, int stringLength) {
 		return repeatCharFor(' ', stringLength - msg.length()) + msg;
-	}
-
-	public static String arrayToString(int[] array) {
-		StringBuilder sb = new StringBuilder();
-		sb.append('[');
-		for (int numb : array) {
-			sb.append(numb);
-			sb.append(", ");
-		}
-		sb.deleteCharAt(sb.length() - 1);
-		sb.deleteCharAt(sb.length() - 1);
-		sb.append(']');
-		return sb.toString();
 	}
 
 	public static List<?> shrinkList(List<?> list, int min, int max) {
