@@ -363,7 +363,7 @@ public class Util {
 	 * 
 	 * @since 1.0
 	 */
-	public static int[] generatePolygonIndeces(Vec2f[] polygon) {
+	public static int[] generatePolygonIndices(Vec2f[] polygon) {
 		if (polygon.length < 3)
 			throw new IllegalArgumentException("A polygon must have at least 3 sides.");
 

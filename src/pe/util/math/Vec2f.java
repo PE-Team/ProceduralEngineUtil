@@ -4,6 +4,14 @@ import java.nio.FloatBuffer;
 
 public class Vec2f {
 
+	/**
+	 * The zero vector for 2 dimensions. Has values <code>x = 0</code> and
+	 * <code>y = 0</code>.
+	 * 
+	 * @since 1.0
+	 */
+	public static final Vec2f ZERO = new Vec2f(0, 0);
+
 	public float x, y;
 
 	public Vec2f() {
@@ -26,7 +34,8 @@ public class Vec2f {
 	 * Returns true if both the <code>x</code> and the <code>y</code> value for
 	 * the input vector are the same for this vector.
 	 * 
-	 * @param vec The vector to compare to.
+	 * @param vec
+	 *            The vector to compare to.
 	 * @return Whether the input vector is equal to this vector.
 	 * 
 	 * @since 1.0
