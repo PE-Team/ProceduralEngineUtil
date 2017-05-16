@@ -1,5 +1,7 @@
 package pe.util.math;
 
+import java.nio.FloatBuffer;
+
 public class Mat3f {
 
 	//s[row][column]
@@ -14,7 +16,7 @@ public class Mat3f {
 		this.s20 = 0; this.s21 = 0; this.s22 = 1;
 	}
 	
-	// Goes down the row, then goes to the next row
+	// Goes down the column, then goes to the next row
 	public Mat3f(float s00, float s10, float s20, float s01, float s11, float s21, float s02, float s12, float s22){
 		this.s00 = s00; this.s01 = s01; this.s02 = s02;
 		this.s10 = s10; this.s11 = s11; this.s12 = s12;
@@ -72,17 +74,18 @@ public class Mat3f {
 	
 	public static Mat3f mul(Mat3f mat1, Mat3f mat2){
 		return new Mat3f(
-				// First Row
+				// First Column
 				mat1.s00*mat2.s00+mat1.s01*mat2.s10+mat1.s02*mat2.s20,
-				mat1.s00*mat2.s01+mat1.s01*mat2.s11+mat1.s02*mat2.s21,
-				mat1.s00*mat2.s02+mat1.s01*mat2.s12+mat1.s02*mat2.s22,
-				// Second Row
 				mat1.s10*mat2.s00+mat1.s11*mat2.s10+mat1.s12*mat2.s20,
-				mat1.s10*mat2.s01+mat1.s11*mat2.s11+mat1.s12*mat2.s21,
-				mat1.s10*mat2.s02+mat1.s11*mat2.s12+mat1.s12*mat2.s22,
-				// Third Row
 				mat1.s20*mat2.s00+mat1.s21*mat2.s10+mat1.s22*mat2.s20,
+				// Second Column
+				mat1.s00*mat2.s01+mat1.s01*mat2.s11+mat1.s02*mat2.s21,
 				mat1.s20*mat2.s01+mat1.s21*mat2.s11+mat1.s22*mat2.s21,
+				mat1.s10*mat2.s01+mat1.s11*mat2.s11+mat1.s12*mat2.s21,
+				
+				// Third Column
+				mat1.s00*mat2.s02+mat1.s01*mat2.s12+mat1.s02*mat2.s22,
+				mat1.s10*mat2.s02+mat1.s11*mat2.s12+mat1.s12*mat2.s22,
 				mat1.s20*mat2.s02+mat1.s21*mat2.s12+mat1.s22*mat2.s22
 				);
 	}
@@ -158,6 +161,17 @@ public class Mat3f {
 				this.s02, this.s12, this.s22
 				);
 	}
+	
+	public FloatBuffer putInBuffer(FloatBuffer buffer){
+		
+		buffer.put(s00).put(s10).put(s20);	// Column 1
+		buffer.put(s01).put(s11).put(s21);	// Column 2
+		buffer.put(s02).put(s12).put(s22);	// Column 3
+		
+		buffer.flip();
+		return buffer;
+	}
+	
 	/*
 	public float det(){
 		return 	this.s00*this.s11*this.s22 + this.s01*this.s12*this.s20 + this.s02*this.s10*this.s21 
