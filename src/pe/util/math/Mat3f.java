@@ -17,7 +17,10 @@ public class Mat3f {
 	}
 	
 	// Goes down the column, then goes to the next row
-	public Mat3f(float s00, float s10, float s20, float s01, float s11, float s21, float s02, float s12, float s22){
+	public Mat3f(float s00, float s01, float s02, 
+				 float s10, float s11, float s12, 
+				 float s20, float s21, float s22){
+		
 		this.s00 = s00; this.s01 = s01; this.s02 = s02;
 		this.s10 = s10; this.s11 = s11; this.s12 = s12;
 		this.s20 = s20; this.s21 = s21; this.s22 = s22;
@@ -74,18 +77,19 @@ public class Mat3f {
 	
 	public static Mat3f mul(Mat3f mat1, Mat3f mat2){
 		return new Mat3f(
-				// First Column
+				// First Row
 				mat1.s00*mat2.s00+mat1.s01*mat2.s10+mat1.s02*mat2.s20,
-				mat1.s10*mat2.s00+mat1.s11*mat2.s10+mat1.s12*mat2.s20,
-				mat1.s20*mat2.s00+mat1.s21*mat2.s10+mat1.s22*mat2.s20,
-				// Second Column
 				mat1.s00*mat2.s01+mat1.s01*mat2.s11+mat1.s02*mat2.s21,
-				mat1.s20*mat2.s01+mat1.s21*mat2.s11+mat1.s22*mat2.s21,
-				mat1.s10*mat2.s01+mat1.s11*mat2.s11+mat1.s12*mat2.s21,
-				
-				// Third Column
 				mat1.s00*mat2.s02+mat1.s01*mat2.s12+mat1.s02*mat2.s22,
+				
+				// Second Row
+				mat1.s10*mat2.s00+mat1.s11*mat2.s10+mat1.s12*mat2.s20,
+				mat1.s10*mat2.s01+mat1.s11*mat2.s11+mat1.s12*mat2.s21,
 				mat1.s10*mat2.s02+mat1.s11*mat2.s12+mat1.s12*mat2.s22,
+				
+				// Third Row
+				mat1.s20*mat2.s00+mat1.s21*mat2.s10+mat1.s22*mat2.s20,
+				mat1.s20*mat2.s01+mat1.s21*mat2.s11+mat1.s22*mat2.s21,
 				mat1.s20*mat2.s02+mat1.s21*mat2.s12+mat1.s22*mat2.s22
 				);
 	}
@@ -108,7 +112,7 @@ public class Mat3f {
 		Mat3f translation = new Mat3f();
 		translation.s02 = delta.x;
 		translation.s12 = delta.y;
-		return Mat3f.mul(this, translation);
+		return Mat3f.mul(translation, this);
 	}
 	
 	public Mat3f rotate(float theta){
@@ -120,14 +124,14 @@ public class Mat3f {
 		rotation.s01 =  sin;
 		rotation.s10 = -sin;
 		rotation.s11 =  cos;
-		return Mat3f.mul(this, rotation);
+		return Mat3f.mul(rotation, this);
 	}
 	
 	public Mat3f scale(Vec2f delta){
 		Mat3f scale = new Mat3f();
 		scale.s00 = delta.x;
 		scale.s11 = delta.y;
-		return Mat3f.mul(this, scale);
+		return Mat3f.mul(scale, this);
 	}
 	
 	public static Mat3f getTransformationMatrix(Vec2f translation, float rotation, float scale){
@@ -168,7 +172,6 @@ public class Mat3f {
 		buffer.put(s01).put(s11).put(s21);	// Column 2
 		buffer.put(s02).put(s12).put(s22);	// Column 3
 		
-		buffer.flip();
 		return buffer;
 	}
 	

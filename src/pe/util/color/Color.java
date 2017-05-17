@@ -650,6 +650,7 @@ public class Color {
 	 * @since 1.0
 	 */
 	public Vec4f getVec4f() {
+		this.toDecimal();
 		return new Vec4f(r, g, b, a);
 	}
 
@@ -677,24 +678,25 @@ public class Color {
 		return new java.awt.Color(this.r, this.g, this.b, this.a);
 	}
 
-	public void putInBuffer(FloatBuffer buffer) {
+	public FloatBuffer putInBuffer(FloatBuffer buffer) {
 		switch (colorType) {
 		case RGB:
 		case CMY:
-			putInBuffer3(buffer);
+			return putInBuffer3(buffer);
 		case RGBA:
 		case CMYA:
-			putInBuffer4(buffer);
+			return putInBuffer4(buffer);
 		}
 		throw new IllegalArgumentException("This color has a unknown 'colorType' value of: " + colorType);
 	}
 
-	public void putInBuffer3(FloatBuffer buffer) {
-		buffer.put(r).put(g).put(b);
+	public FloatBuffer putInBuffer3(FloatBuffer buffer) {
+		return buffer.put(r).put(g).put(b);
 	}
 
-	public void putInBuffer4(FloatBuffer buffer) {
-		buffer.put(r).put(g).put(b).put(a);
+	public FloatBuffer putInBuffer4(FloatBuffer buffer) {
+		this.toDecimal();
+		return buffer.put(r).put(g).put(b).put(a);
 	}
 
 	public Color toCMY() {

@@ -18,8 +18,12 @@ public class Mat4f {
 			this.s30 = 0; this.s31 = 0; this.s32 = 0; this.s33 = 1;
 		}
 		
-		// Goes down the column, then goes to the next column
-		public Mat4f(float s00, float s10, float s20, float s30, float s01, float s11, float s21, float s31, float s02, float s12, float s22, float s32, float s03, float s13, float s23, float s33){
+		// Goes down the row, then goes to the next row
+		public Mat4f(float s00, float s01, float s02, float s03, 
+					 float s10, float s11, float s12, float s13, 
+					 float s20, float s21, float s22, float s23, 
+					 float s30, float s31, float s32, float s33){
+			
 			this.s00 = s00; this.s01 = s01; this.s02 = s02; this.s03 = s03;
 			this.s10 = s10; this.s11 = s11; this.s12 = s12; this.s13 = s13;
 			this.s20 = s20; this.s21 = s21; this.s22 = s22; this.s23 = s23;
@@ -103,7 +107,6 @@ public class Mat4f {
 			buffer.put(s02).put(s12).put(s22).put(s32); // Column 3
 			buffer.put(s03).put(s13).put(s23).put(s33); // Column 4
 			
-			buffer.flip();
 			return buffer;
 		}
 		
@@ -240,7 +243,7 @@ public class Mat4f {
 			return new Mat4f(
 					2 / (right - left), 	0, 						0, 					-(right + left)/(right - left),
 					0, 						2 / (top - bottom), 	0, 					-(top + bottom)/(top - bottom),
-					0, 						0, 						2 / (far - near), 	-(far + near)/(far - near),
+					0, 						0, 						-2 / (far - near), 	-(far + near)/(far - near),
 					0, 						0, 						0, 					1
 					);
 		}

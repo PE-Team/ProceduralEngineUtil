@@ -31,6 +31,11 @@ public class Rectangle extends Quadrilateral {
 		this.vertices = new Vec2f[]{
 				c1, c2, Vec2f.add(c1, widthVector), Vec2f.add(c2, widthVector)
 		};
+		
+		Vec2f boundingBox = getBoundingBox(c1, c2, Vec2f.add(c1, widthVector), Vec2f.add(c2, widthVector));
+		
+		this.width = boundingBox.x;
+		this.height = boundingBox.y;
 	}
 
 	public Rectangle(Vec2f c1, Vec2f c2, Vec2f c3) {
@@ -41,5 +46,10 @@ public class Rectangle extends Quadrilateral {
 		this.vertices = new Vec2f[]{
 				c1, c2, c3, c4
 		};
+		
+		Vec2f boundingBox = getBoundingBox(c1, c2, c3, c4);
+		
+		this.width = boundingBox.x;
+		this.height = boundingBox.y;
 	}
 }
