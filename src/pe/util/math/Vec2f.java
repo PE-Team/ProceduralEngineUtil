@@ -75,14 +75,17 @@ public class Vec2f {
 
 	/**
 	 * Loads the <code>Vec2f</code> object into a Float vector. The same as
-	 * <code>floatBuffer.put(vector.x).put(vector.y)</code>. The same buffer
+	 * <code>floatBuffer.put(vector.x).put(vector.y</code>. The same buffer
 	 * object that is a parameter is used, so the buffer object will
 	 * automatically be updated with the vector's information, however, in the
 	 * case of a one-line use, the function also returns the buffer. Note that
 	 * the buffer will still need to be flipped afterwards.
 	 * 
+	 * 
 	 * @param buffer
 	 *            the <code>FloatBuffer</code> to put the vector in.
+	 * 
+	 * @return The float buffer the vector was put in.
 	 * 
 	 * @see #x
 	 * @see #y
@@ -93,6 +96,34 @@ public class Vec2f {
 	 */
 	public FloatBuffer putInBuffer(FloatBuffer buffer) {
 		buffer.put(x).put(y);
+		return buffer;
+	}
+
+	/**
+	 * Loads the <code>Vec2f</code> object into a Float vector. The same as
+	 * <code>floatBuffer.clear(); floatBuffer.put(vector.x).put(vector.y)</code>.
+	 * The same buffer object that is a parameter is used, so the buffer object
+	 * will automatically be updated with the vector's information, however, in
+	 * the case of a one-line use, the function also returns the buffer. Note
+	 * that the buffer is automatically flipped.
+	 * 
+	 * 
+	 * @param buffer
+	 *            the <code>FloatBuffer</code> to put the vector in.
+	 * 
+	 * @return The float buffer the vector was put in.
+	 * 
+	 * @see #x
+	 * @see #y
+	 * @see #FloatBuffer.put()
+	 * @see FloatBuffer
+	 * 
+	 * @since 1.0
+	 */
+	public FloatBuffer putInBufferC(FloatBuffer buffer) {
+		buffer.clear();
+		buffer.put(x).put(y);
+		buffer.flip();
 		return buffer;
 	}
 

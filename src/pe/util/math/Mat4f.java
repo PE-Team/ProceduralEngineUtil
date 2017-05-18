@@ -110,6 +110,19 @@ public class Mat4f {
 			return buffer;
 		}
 		
+		public FloatBuffer putInBufferC(FloatBuffer buffer){
+			buffer.clear();
+			
+			buffer.put(s00).put(s10).put(s20).put(s30); // Column 1
+			buffer.put(s01).put(s11).put(s21).put(s31); // Column 2
+			buffer.put(s02).put(s12).put(s22).put(s32); // Column 3
+			buffer.put(s03).put(s13).put(s23).put(s33); // Column 4
+			
+			buffer.flip();
+			
+			return buffer;
+		}
+		
 		public static Mat4f mul(Mat4f mat1, Mat4f mat2){
 			return new Mat4f(
 					// First Row

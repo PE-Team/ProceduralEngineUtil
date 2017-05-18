@@ -6,16 +6,23 @@ import java.util.Map;
 import java.util.Set;
 
 import pe.util.math.Vec2f;
+import pe.util.math.Vec3f;
 
 public class PolygonTriangulationAlgorithm {
 
 	public static void main(String... args) {
-		Vec2f[] polygon = { new Vec2f(1, 1), new Vec2f(0, 1), new Vec2f(0, 2), new Vec2f(1, 2), new Vec2f(1, 3),
+
+		Vec2f[] square = { new Vec2f(0, 0), new Vec2f(0, 1), new Vec2f(1, 1), new Vec2f(1, 0) };
+
+		Vec2f[] plus = { new Vec2f(1, 1), new Vec2f(0, 1), new Vec2f(0, 2), new Vec2f(1, 2), new Vec2f(1, 3),
 				new Vec2f(2, 3), new Vec2f(2, 2), new Vec2f(3, 2), new Vec2f(3, 1), new Vec2f(2, 1), new Vec2f(2, 0),
 				new Vec2f(1, 0) };
 
-		int[] indeces = generatePolygonIndeces(polygon);
-		System.out.println(Util.arrayToString(indeces));
+		int[] indices = generatePolygonIndeces(plus);
+		System.out.println(Util.arrayToString(indices));
+
+		Vec3f[] barycentric = Util.giveBarycentricCoords(indices);
+		System.out.println(Util.arrayToString(barycentric));
 	}
 
 	/**

@@ -689,14 +689,45 @@ public class Color {
 		}
 		throw new IllegalArgumentException("This color has a unknown 'colorType' value of: " + colorType);
 	}
-
-	public FloatBuffer putInBuffer3(FloatBuffer buffer) {
-		return buffer.put(r).put(g).put(b);
+	
+	public FloatBuffer putInBufferC(FloatBuffer buffer) {
+		switch (colorType) {
+		case RGB:
+		case CMY:
+			return putInBuffer3C(buffer);
+		case RGBA:
+		case CMYA:
+			return putInBuffer4C(buffer);
+		}
+		throw new IllegalArgumentException("This color has a unknown 'colorType' value of: " + colorType);
 	}
 
+	public FloatBuffer putInBuffer3(FloatBuffer buffer) {
+		this.toDecimal();
+		buffer.put(r).put(g).put(b);
+		return buffer;
+	}
+	
+	public FloatBuffer putInBuffer3C(FloatBuffer buffer) {
+		this.toDecimal();
+		buffer.clear();
+		buffer.put(r).put(g).put(b);
+		buffer.flip();
+		return buffer;
+	}
+	
 	public FloatBuffer putInBuffer4(FloatBuffer buffer) {
 		this.toDecimal();
-		return buffer.put(r).put(g).put(b).put(a);
+		buffer.put(r).put(g).put(b).put(a);
+		return buffer;
+	}
+
+	public FloatBuffer putInBuffer4C(FloatBuffer buffer) {
+		this.toDecimal();
+		buffer.clear();
+		buffer.put(r).put(g).put(b).put(a);
+		buffer.flip();
+		return buffer;
 	}
 
 	public Color toCMY() {

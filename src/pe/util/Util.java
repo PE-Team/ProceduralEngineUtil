@@ -16,10 +16,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import pe.util.math.Vec2f;
+import pe.util.math.Vec3f;
 
 public class Util {
 
-	public static final String[] defaultClassFileLocations = new String[] { "./bin", "C:/Program Files/Java/jdk1.8.0_101/" };
+	public static final String[] defaultClassFileLocations = new String[] { "./bin",
+			"C:/Program Files/Java/jdk1.8.0_101/" };
 
 	public static final float NANO = 1000000000.0f;
 	public static final int FLOAT_BYTE_SIZE = 4;
@@ -74,6 +76,77 @@ public class Util {
 		String space1 = repeatCharFor(' ', spaces / 2);
 		String space2 = repeatCharFor(' ', spaces / 2 + spaces % 2);
 		return String.format("%s%s%s%s%s", leftAlign, space1, centerAlign, space2, rightAlign);
+	}
+
+	public static Vec3f[] giveBarycentricCoords(int[] indices) {
+
+		Vec3f v0 = new Vec3f(1, 1, 1);
+		Vec3f v1 = new Vec3f(1, 0, 0);
+		Vec3f v2 = new Vec3f(0, 1, 0);
+		Vec3f v3 = new Vec3f(0, 0, 1);
+
+		Set<int[]> indicesSet = new HashSet<int[]>();
+
+		/*
+		 * Step 1: Set up triangle index pairings for all triangles except the
+		 * first
+		 */
+		for (int i = 3; i < indices.length; i += 3) {
+			int[] triangleIndices = new int[] { indices[i], indices[i + 1], indices[i + 2] };
+			indicesSet.add(triangleIndices);
+		}
+
+		Map<Integer, Vec3f> indexPairings = new HashMap<Integer, Vec3f>();
+
+		/* Step 2: Give barycentric Vec3f values for the first 3 vertices */
+		indexPairings.put(indices[0], v1);
+		indexPairings.put(indices[1], v2);
+		indexPairings.put(indices[2], v3);
+
+		/*
+		 * Step 3: Find triangles with 2/3 vertices having barycentric values
+		 * and give the 3rd one its value. Then remove those indices from the
+		 * indices set.
+		 */
+		while (indicesSet.size() > 0) {
+			Set<int[]> interatableIndicesSet = new HashSet<int[]>();
+			interatableIndicesSet.addAll(indicesSet);
+			
+			for(int[] indicesPair:interatableIndicesSet){
+				if(indexPairings.containsKey(indicesPair[0])){
+					if(indexPairings.containsKey(indicesPair[1])){
+						
+						Vec3f value = Vec3f.subtract(indexPairings.get(indicesPair[1]), Vec3f.subtract(indexPairings.get(indicesPair[0]), v0));
+						indexPairings.put(indicesPair[2], value);
+						indicesSet.remove(indicesPair);
+						
+					}else if(indexPairings.containsKey(indicesPair[2])){
+						
+						Vec3f value = Vec3f.subtract(indexPairings.get(indicesPair[2]), Vec3f.subtract(indexPairings.get(indicesPair[0]), v0));
+						indexPairings.put(indicesPair[1], value);
+						indicesSet.remove(indicesPair);
+						
+					}
+				}else if(indexPairings.containsKey(indicesPair[1]) && indexPairings.containsKey(indicesPair[2])){
+					
+					Vec3f value = Vec3f.subtract(indexPairings.get(indicesPair[2]), Vec3f.subtract(indexPairings.get(indicesPair[1]), v0));
+					indexPairings.put(indicesPair[0], value);
+					indicesSet.remove(indicesPair);
+					
+				}
+			}
+		}
+		
+		/*
+		 * Step 4: Change dictionary pairings into output barycentric vectors.
+		 */
+		Vec3f[] barycentric = new Vec3f[indexPairings.size()];
+		
+		for(int index:indexPairings.keySet()){
+			barycentric[index] = indexPairings.get(index);
+		}
+
+		return barycentric;
 	}
 
 	public static boolean allCharsMatch(char charRight, char charLeft, String statementStr) {

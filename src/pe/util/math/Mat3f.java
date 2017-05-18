@@ -175,6 +175,18 @@ public class Mat3f {
 		return buffer;
 	}
 	
+	public FloatBuffer putInBufferC(FloatBuffer buffer){
+		buffer.clear();
+		
+		buffer.put(s00).put(s10).put(s20);	// Column 1
+		buffer.put(s01).put(s11).put(s21);	// Column 2
+		buffer.put(s02).put(s12).put(s22);	// Column 3
+		
+		buffer.flip();
+		
+		return buffer;
+	}
+	
 	/*
 	public float det(){
 		return 	this.s00*this.s11*this.s22 + this.s01*this.s12*this.s20 + this.s02*this.s10*this.s21 

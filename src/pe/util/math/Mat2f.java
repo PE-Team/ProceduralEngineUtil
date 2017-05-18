@@ -1,5 +1,7 @@
 package pe.util.math;
 
+import java.nio.FloatBuffer;
+
 public class Mat2f {
 
 	//s[row][column]
@@ -75,6 +77,25 @@ public class Mat2f {
 				this.s00, this.s10,
 				this.s01, this.s11
 				);
+	}
+	
+	public FloatBuffer putInBuffer(FloatBuffer buffer){
+		
+		buffer.put(s00).put(s10);	// Column 1
+		buffer.put(s01).put(s11);	// Column 2
+		
+		return buffer;
+	}
+	
+	public FloatBuffer putInBufferC(FloatBuffer buffer){
+		buffer.clear();
+		
+		buffer.put(s00).put(s10);	// Column 1
+		buffer.put(s01).put(s11);	// Column 2
+		
+		buffer.flip();
+		
+		return buffer;
 	}
 	
 	public float det(){
