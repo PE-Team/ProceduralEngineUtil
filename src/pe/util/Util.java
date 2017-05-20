@@ -78,6 +78,79 @@ public class Util {
 		return String.format("%s%s%s%s%s", leftAlign, space1, centerAlign, space2, rightAlign);
 	}
 
+	/**
+	 * Returns an array of dimension two with each entry containing an array of
+	 * vectors. The first array of vectors represents the direction the polygon
+	 * goes when entering a vertex from the previous vertex. The second array of
+	 * vectors represents the direction the polygon travels to go from a vertex
+	 * to the next vertex.
+	 * 
+	 * @param polygon
+	 *            The polygon to get the vector directions for.
+	 * @return The vectors going in and out from each vertex.
+	 * 
+	 * @since 1.0
+	 */
+	public static Vec2f[][] getBorderVertexInOut(Vec2f[] polygon) {
+		Vec2f[][] vertexInOut = new Vec2f[2][polygon.length];
+
+		for (int i = 0; i < polygon.length; i++) {
+			Vec2f in = Vec2f.subtract(getl(i - 1, polygon), polygon[i]);
+			Vec2f out = Vec2f.subtract(polygon[i], getl(i + 1, polygon));
+			vertexInOut[0][i] = in;
+			vertexInOut[1][i] = out;
+		}
+
+		return vertexInOut;
+	}
+
+	/**
+	 * Gives a 2D vector to each vertex representing which vertex it goes to,
+	 * and which vertex it came from in the following form:
+	 * <code>{vertexIndexInPolygon, vertexIndexInPolygon - 1}</code>. The first
+	 * vector has a <code>y</code> value of <code>polygon.length - 1</code>. In
+	 * this way, an edge of a polygon can be detected when comparing two
+	 * vertices when either <code>v1ID.x = v2ID.y</code> or
+	 * <code>v2ID.x = v1ID.y</code>.
+	 * 
+	 * @param polygon
+	 *            The polygon to give the IDs to.
+	 * @return The IDs for each vertex representing where it came from and where
+	 *         it will go.
+	 * 
+	 * @since 1.0
+	 */
+	public static Vec2f[] giveBorderEdgeIDs(Vec2f[] polygon) {
+		Vec2f[] borderIDs = new Vec2f[polygon.length];
+
+		Vec2f id0 = new Vec2f(0, polygon.length - 1);
+		borderIDs[0] = id0;
+
+		for (int i = 0; i < polygon.length; i++) {
+			Vec2f id = new Vec2f(i, i - 1);
+			borderIDs[i] = id;
+		}
+
+		return borderIDs;
+	}
+
+	/**
+	 * Gives a three-dimensional vector to each vertex which is either
+	 * <code>{1, 0, 0}</code>, <code>{0, 1, 0}</code>, or
+	 * <code>{0, 0, 1}</code>. Each triangle given by <code>indices</code> will
+	 * only have one of each vector. This can be quite useful for rendering
+	 * custom wireframe borders.
+	 * 
+	 * @param indices
+	 *            The indices which make up the triangles which make up the
+	 *            polygon.
+	 * @return An array of 3D vectors for each vertex, given in order of their
+	 *         index value (0 is first).
+	 * 
+	 * @see #generatePolygonIndices(Vec2f[])
+	 * 
+	 * @since 1.0
+	 */
 	public static Vec3f[] giveBarycentricCoords(int[] indices) {
 
 		Vec3f v0 = new Vec3f(1, 1, 1);
@@ -111,38 +184,41 @@ public class Util {
 		while (indicesSet.size() > 0) {
 			Set<int[]> interatableIndicesSet = new HashSet<int[]>();
 			interatableIndicesSet.addAll(indicesSet);
-			
-			for(int[] indicesPair:interatableIndicesSet){
-				if(indexPairings.containsKey(indicesPair[0])){
-					if(indexPairings.containsKey(indicesPair[1])){
-						
-						Vec3f value = Vec3f.subtract(indexPairings.get(indicesPair[1]), Vec3f.subtract(indexPairings.get(indicesPair[0]), v0));
+
+			for (int[] indicesPair : interatableIndicesSet) {
+				if (indexPairings.containsKey(indicesPair[0])) {
+					if (indexPairings.containsKey(indicesPair[1])) {
+
+						Vec3f value = Vec3f.subtract(indexPairings.get(indicesPair[1]),
+								Vec3f.subtract(indexPairings.get(indicesPair[0]), v0));
 						indexPairings.put(indicesPair[2], value);
 						indicesSet.remove(indicesPair);
-						
-					}else if(indexPairings.containsKey(indicesPair[2])){
-						
-						Vec3f value = Vec3f.subtract(indexPairings.get(indicesPair[2]), Vec3f.subtract(indexPairings.get(indicesPair[0]), v0));
+
+					} else if (indexPairings.containsKey(indicesPair[2])) {
+
+						Vec3f value = Vec3f.subtract(indexPairings.get(indicesPair[2]),
+								Vec3f.subtract(indexPairings.get(indicesPair[0]), v0));
 						indexPairings.put(indicesPair[1], value);
 						indicesSet.remove(indicesPair);
-						
+
 					}
-				}else if(indexPairings.containsKey(indicesPair[1]) && indexPairings.containsKey(indicesPair[2])){
-					
-					Vec3f value = Vec3f.subtract(indexPairings.get(indicesPair[2]), Vec3f.subtract(indexPairings.get(indicesPair[1]), v0));
+				} else if (indexPairings.containsKey(indicesPair[1]) && indexPairings.containsKey(indicesPair[2])) {
+
+					Vec3f value = Vec3f.subtract(indexPairings.get(indicesPair[2]),
+							Vec3f.subtract(indexPairings.get(indicesPair[1]), v0));
 					indexPairings.put(indicesPair[0], value);
 					indicesSet.remove(indicesPair);
-					
+
 				}
 			}
 		}
-		
+
 		/*
 		 * Step 4: Change dictionary pairings into output barycentric vectors.
 		 */
 		Vec3f[] barycentric = new Vec3f[indexPairings.size()];
-		
-		for(int index:indexPairings.keySet()){
+
+		for (int index : indexPairings.keySet()) {
 			barycentric[index] = indexPairings.get(index);
 		}
 
@@ -879,7 +955,7 @@ public class Util {
 	 * @since 1.0
 	 */
 	public static <T> T getl(int index, T[] array) {
-		return array[index % array.length];
+		return array[((index % array.length) + array.length) % array.length];
 	}
 
 	public static int getLastIndexBefore(int index, String strPart, String str) {
