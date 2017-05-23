@@ -65,12 +65,53 @@ public class Vec2f {
 	public static float angleBetween(Vec2f vec1, Vec2f vec2) {
 		return (float) Math.toDegrees(Math.acos((dot(vec1, vec2)) / (vec1.length() * vec2.length())));
 	}
+	
+	public static double radiansBetween(Vec2f vec1, Vec2f vec2) {
+		return Math.acos((dot(vec1, vec2)) / (vec1.length() * vec2.length()));
+	}
 
 	public Vec2f unit() {
 		float length = this.length();
 		this.x /= length;
 		this.y /= length;
 		return this;
+	}
+	
+	public static Vec2f projectOnto(Vec2f direction, Vec2f vec){
+		Vec2f unitDir = (new Vec2f(direction.x, direction.y)).unit();
+		float dot = Vec2f.dot(vec, unitDir);
+		
+		return unitDir.mul(dot);
+	}
+
+	/**
+	 * Inverts a vector so that it points in the opposite direction. More
+	 * specifically, multiplies each component of the vector by <code>-1</code>.
+	 * This is effectively the same as <code>vector.mul(-1)</code>.
+	 * 
+	 * @return The vector pointed in the opposite direction.
+	 * 
+	 * @see #mul(float)
+	 * 
+	 * @since 1.0
+	 */
+	public Vec2f invert() {
+		this.x = -x;
+		this.y = -y;
+		return this;
+	}
+
+	/**
+	 * Returns a non-unit normal vector to this vector. Specifically the one
+	 * which lies to the "left" of the vector. The new vector will have the
+	 * components <code>{-y, x</code>.
+	 * 
+	 * @return A normal vector to the vector provided.
+	 * 
+	 * @since 1.0
+	 */
+	public Vec2f normal() {
+		return new Vec2f(-y, x);
 	}
 
 	/**

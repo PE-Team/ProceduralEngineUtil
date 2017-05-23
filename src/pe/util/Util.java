@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import pe.util.math.Maths;
 import pe.util.math.Vec2f;
 import pe.util.math.Vec3f;
 
@@ -76,6 +77,42 @@ public class Util {
 		String space1 = repeatCharFor(' ', spaces / 2);
 		String space2 = repeatCharFor(' ', spaces / 2 + spaces % 2);
 		return String.format("%s%s%s%s%s", leftAlign, space1, centerAlign, space2, rightAlign);
+	}
+
+	/**
+	 * Returns an array of vectors. Each entry represents the vector to add to
+	 * each vertex to get a smaller polygon which when placed over the old
+	 * polygon will have a border between them with a distance of offset. As a
+	 * general rule, offset is usually an integer (pixels), however it does
+	 * support floats as well.
+	 * 
+	 * @param polygon
+	 *            The polygon to calculate the offsets for each vertex for.
+	 * @param offset
+	 *            The offset magnitude. More specifically, border width;
+	 * @return An array of offsets for each vertex.
+	 * 
+	 * @since 1.0
+	 */
+	public static Vec2f[] getBorderVertexOffset(Vec2f[] polygon, float offset) {
+		Vec2f[] vertexOffset = new Vec2f[polygon.length];
+		int normalMult = clockwisePolygon(polygon) > 0 ? -1 : 1;
+
+		for (int i = 0; i < polygon.length; i++) {
+			Vec2f in = Vec2f.subtract(polygon[i], getl(i - 1, polygon));
+			Vec2f inNorm = in.normal().mul(-normalMult);
+			Vec2f out = Vec2f.subtract(polygon[i], getl(i + 1, polygon));
+			Vec2f outNorm = out.normal().mul(normalMult);
+			Vec2f bisec = Vec2f.add(in.unit(), out.unit());
+			
+			float inOutDot = Vec2f.dot(Vec2f.add(inNorm, outNorm), bisec);
+			int inverse = inOutDot < 0 ? -1 : 1;
+			
+			float scale = inverse * offset / (float) Math.sin(Vec2f.radiansBetween(in, out));
+			vertexOffset[i] = bisec.mul(scale);
+		}
+
+		return vertexOffset;
 	}
 
 	/**
@@ -347,9 +384,9 @@ public class Util {
 	 * Returns a value based on how "clockwise" a polygon is.
 	 * </p>
 	 * <ul>
-	 * <li>> 1: The polygon is generally clockwise.
-	 * <li>= 1: The polygon is neither clockwise nor counter-clockwise.
-	 * <li>< 1: The polygon is generally counter-clockwise.
+	 * <li>> 0: The polygon is generally clockwise.
+	 * <li>= 0: The polygon is neither clockwise nor counter-clockwise.
+	 * <li>< 0: The polygon is generally counter-clockwise.
 	 * </ul>
 	 * <p>
 	 * If the edges of a polygon generally turn "right" to form the next edge,
