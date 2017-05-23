@@ -163,7 +163,7 @@ public class Util {
 		Vec2f id0 = new Vec2f(0, polygon.length - 1);
 		borderIDs[0] = id0;
 
-		for (int i = 0; i < polygon.length; i++) {
+		for (int i = 1; i < polygon.length; i++) {
 			Vec2f id = new Vec2f(i, i - 1);
 			borderIDs[i] = id;
 		}
