@@ -108,7 +108,7 @@ public class Util {
 			float inOutDot = Vec2f.dot(Vec2f.add(inNorm, outNorm), bisec);
 			int inverse = inOutDot < 0 ? -1 : 1;
 			
-			float scale = inverse * offset / (float) Math.sin(Vec2f.radiansBetween(in, out));
+			float scale = (float) (inverse * offset / Math.sin(Vec2f.radiansBetween(in, out)));
 			vertexOffset[i] = bisec.mul(scale);
 		}
 
