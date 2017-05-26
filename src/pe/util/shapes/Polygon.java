@@ -115,7 +115,7 @@ public class Polygon {
 
 	/**
 	 * <p>
-	 * Returns the vertices that make up the polygon
+	 * Returns the vertices that make up the polygon.
 	 * </p>
 	 * 
 	 * @return The vertices of the polygon.
@@ -126,6 +126,19 @@ public class Polygon {
 	 */
 	public Vec2f[] getVertices() {
 		return vertices;
+	}
+
+	/**
+	 * Returns the amount of vertices which make up the polygon.
+	 * 
+	 * @return The number of vertices in the polygon.
+	 * 
+	 * @see #vertices
+	 * 
+	 * @since 1.0
+	 */
+	public int getVerticesCount() {
+		return vertices.length;
 	}
 
 	/**
