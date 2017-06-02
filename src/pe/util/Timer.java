@@ -32,7 +32,7 @@ public class Timer {
 	 * 
 	 * @since 1.0
 	 */
-	private float startTime;
+	private long startTime;
 
 	/**
 	 * Represents the time since either <code>start</code> or
@@ -43,7 +43,7 @@ public class Timer {
 	 * 
 	 * @since 1.0
 	 */
-	private float lastDelta;
+	private long lastDelta;
 
 	/**
 	 * Represents the time since either <code>start</code> was called or since
@@ -54,7 +54,7 @@ public class Timer {
 	 * 
 	 * @since 1.0
 	 */
-	private float lastSecond;
+	private long lastSecond;
 
 	/**
 	 * Represents the time since either <code>start</code> was called or since
@@ -65,7 +65,7 @@ public class Timer {
 	 * 
 	 * @since 1.0
 	 */
-	private float lastDelay;
+	private long lastDelay;
 
 	/**
 	 * Represents the time required since <code>lastDelay</code> for
@@ -76,7 +76,7 @@ public class Timer {
 	 * 
 	 * @since 1.0
 	 */
-	private float delay;
+	private long delay;
 
 	/**
 	 * Default Class Constructor. Calling <code>start</code> after constructing
@@ -108,14 +108,14 @@ public class Timer {
 	 * @since 1.0
 	 */
 	public Timer(float delay) {
-		this.delay = delay;
+		this.delay = (long) (delay * Util.NANO);
 	}
 
 	/**
 	 * Returns <code>true</code> if an amount of time equal to or greater than
 	 * <code>delay</code> has passed since the last time <code>lastDelay</code>
 	 * was updated. If it returns <code>true</code>, then <code>lastDelay</code>
-	 * is automatically set to <code>getCurrentTime</code>.
+	 * is automatically set to <code>System.nanoTime()</code>.
 	 * 
 	 * @return <code>true</code> if an amount of time of at least
 	 *         <code>delay</code> in seconds has passed since
@@ -124,16 +124,15 @@ public class Timer {
 	 * @throws NullPointerException
 	 *                if <code>start</code> is not called before this method.
 	 * 
-	 * @see #getCurrentTime()
 	 * @see #delay
 	 * @see #lastDelay
 	 * 
 	 * @since 1.0
 	 */
 	public boolean delayPassed() {
-		float result = getCurrentTime() - lastDelay;
+		long result = System.nanoTime() - lastDelay;
 		if (result > delay) {
-			lastDelay = getCurrentTime();
+			lastDelay = System.nanoTime();
 			return true;
 		} else {
 			return false;
@@ -152,23 +151,22 @@ public class Timer {
 	}
 
 	/**
-	 * Returns the amount of time in seconds between <code>getCurrentTime</code>
+	 * Returns the amount of time in seconds between <code>System.nanoTime()</code>
 	 * and <code>lastDelta</code>, and then sets <code>lastDelta</code> to be
-	 * equal to <code>getCurrentTime</code>.
+	 * equal to <code>System.nanoTime()</code>.
 	 * 
 	 * @return The time in seconds since the last call of <code>getDelta</code>.
 	 * 
 	 * @exception NullPointerException
 	 *                if <code>start</code> is not called before this method.
 	 * 
-	 * @see #getCurrentTime()
 	 * @see #lastDelta
 	 * 
 	 * @since 1.0
 	 */
 	public float getDelta() {
-		float result = getCurrentTime() - lastDelta;
-		lastDelta = getCurrentTime();
+		long result = System.nanoTime() - lastDelta;
+		lastDelta = System.nanoTime();
 		return result;
 	}
 
@@ -186,12 +184,12 @@ public class Timer {
 	 * @since 1.0
 	 */
 	public float getStart() {
-		return startTime;
+		return startTime / Util.NANO;
 	}
 
 	/**
 	 * Returns the amount of time that has passed between
-	 * <code>getCurrentTime</code> and <code>startTime</code> in seconds. This
+	 * <code>System.nanoTime()</code> and <code>startTime</code> in seconds. This
 	 * is also equal to the time since <code>start</code> was called.
 	 * 
 	 * @return The time since the Timer was started
@@ -200,14 +198,13 @@ public class Timer {
 	 *                if <code>start</code> is not called before this method.
 	 *
 	 * 
-	 * @see #getCurrentTime()
 	 * @see #start()
 	 * @see #startTime
 	 * 
 	 * @since 1.0
 	 */
 	public float getTime() {
-		return getCurrentTime() - startTime;
+		return (System.nanoTime() - startTime) / Util.NANO;
 	}
 
 	/**
@@ -221,16 +218,15 @@ public class Timer {
 	 * @exception NullPointerException
 	 *                if <code>start</code> is not called before this method.
 	 * 
-	 * @see #getCurrentTime()
 	 * @see #start()
 	 * @see #lastSecond
 	 * 
 	 * @since 1.0
 	 */
 	public boolean secondPassed() {
-		float result = getCurrentTime() - lastSecond;
-		if (result > 1) {
-			lastSecond = getCurrentTime();
+		long result = System.nanoTime() - lastSecond;
+		if (result > Util.NANO) {
+			lastSecond = System.nanoTime();
 			return true;
 		} else {
 			return false;
@@ -252,7 +248,7 @@ public class Timer {
 	 * @since 1.0
 	 */
 	public void setDelay(float delay) {
-		this.delay = delay;
+		this.delay = (long) (delay * Util.NANO);
 	}
 
 	/**
@@ -264,9 +260,8 @@ public class Timer {
 	 * <code>lastDelay</code>, and will be initially equal to one another.
 	 * <code>lastDelta</code>, <code>lastSecond</code>, and
 	 * <code>lastDelay</code> are initially set to be equal to
-	 * <code>startTime</code> which is set to be <code>getCurrentTime</code>.
+	 * <code>startTime</code> which is set to be <code>System.nanoTime()</code>.
 	 * 
-	 * @see #getCurrentTime()
 	 * @see #lastDelay
 	 * @see #lastDelta
 	 * @see #lastSecond
@@ -275,7 +270,7 @@ public class Timer {
 	 * @since 1.0
 	 */
 	public void start() {
-		startTime = getCurrentTime();
+		startTime = System.nanoTime();
 		lastDelta = startTime;
 		lastSecond = startTime;
 		lastDelay = startTime;
