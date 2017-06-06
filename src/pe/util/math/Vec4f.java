@@ -4,6 +4,14 @@ import java.nio.FloatBuffer;
 
 public class Vec4f {
 
+	/**
+	 * The zero vector for 4 dimensions. Has the values:
+	 * <code>{0, 0, 0, 0}</code>.
+	 * 
+	 * @since 1.0
+	 */
+	public static final Vec4f ZERO = new Vec4f(0f, 0f, 0f, 0f);
+
 	public float x, y, z, w;
 
 	public Vec4f() {
@@ -85,7 +93,7 @@ public class Vec4f {
 		buffer.put(x).put(y).put(z).put(w);
 		return buffer;
 	}
-	
+
 	/**
 	 * Loads the <code>Vec4f</code> object into a Float vector. The same as
 	 * <code>floatBuffer.clear(); floatBuffer.put(vector.x).put(vector.y).put(vector.z).put(vector.w)</code>.
