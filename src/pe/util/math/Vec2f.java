@@ -45,6 +45,10 @@ public class Vec2f {
 		Vec2f vec = (Vec2f) vector;
 		return x == vec.x && y == vec.y;
 	}
+	
+	public static Vec2f mul(Vec2f vec, float scale){
+		return new Vec2f(vec.x * 2, vec.y * scale);
+	}
 
 	public static Vec2f add(Vec2f vec1, Vec2f vec2) {
 		return new Vec2f(vec2.x + vec1.x, vec2.y + vec1.y);
