@@ -38,12 +38,12 @@ public class StringToIntConverter {
 	}
 
 	public static int stringToInt(String string) {
-		int numb = -1;
+		int numb = 0;
 		for (int i = 0; i < string.length(); i++) {
 			char charAt = string.charAt(i);
 			for (int j = 0; j < charset.length; j++) {
 				if (charAt == charset[j]) {
-					numb += Math.pow(charset.length, i) + j + 1;
+					numb += (j + 1) * Math.pow(charset.length, i);
 				}
 			}
 		}
