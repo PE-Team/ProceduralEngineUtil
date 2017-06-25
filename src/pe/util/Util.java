@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import pe.util.math.Mat3f;
 import pe.util.math.Maths;
 import pe.util.math.Vec2f;
 import pe.util.math.Vec3f;
@@ -69,6 +70,27 @@ public class Util {
 			count += array[i];
 		}
 		return count;
+	}
+	
+	public static boolean isInRectangle(Vec2f position, Vec2f size, Vec2f center, float rotation, Vec2f point){
+		point = Mat3f.mul(new Mat3f().translate(Vec2f.mul(center, -1)).rotate(-rotation).translate(center), new Vec3f(point, 1.0f)).xy();
+		
+		Vec2f B = new Vec2f(position);
+		B.x += size.x;
+		
+		Vec2f D = new Vec2f(position);
+		D.y += size.y;
+		
+		Vec2f AP = Vec2f.subtract(position, point);
+		Vec2f AB = Vec2f.subtract(position, B);
+		Vec2f AD = Vec2f.subtract(position, D);
+		
+		float APAB = Vec2f.dot(AP, AB);
+		float ABAB = Vec2f.dot(AB, AB);
+		float APAD = Vec2f.dot(AP, AD);
+		float ADAD = Vec2f.dot(AD, AD);
+		
+		return 0 < APAB && APAB < ABAB && 0 < APAD && APAD < ADAD;
 	}
 
 	public static String alignStrings(String leftAlign, String centerAlign, String rightAlign, int stringLength) {

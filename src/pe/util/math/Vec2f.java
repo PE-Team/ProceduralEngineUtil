@@ -18,6 +18,11 @@ public class Vec2f {
 		this.x = 0;
 		this.y = 0;
 	}
+	
+	public Vec2f(Vec2f vec){
+		this.x = vec.x;
+		this.y = vec.y;
+	}
 
 	public Vec2f(float x, float y) {
 		this.x = x;
@@ -47,7 +52,7 @@ public class Vec2f {
 	}
 	
 	public static Vec2f mul(Vec2f vec, float scale){
-		return new Vec2f(vec.x * 2, vec.y * scale);
+		return new Vec2f(vec.x * scale, vec.y * scale);
 	}
 
 	public static Vec2f add(Vec2f vec1, Vec2f vec2) {
@@ -64,6 +69,10 @@ public class Vec2f {
 
 	public static Vec3f cross(Vec2f vec1, Vec2f vec2) {
 		return new Vec3f(0, 0, vec1.x * vec2.y - vec1.y * vec2.x);
+	}
+	
+	public static float crossArea(Vec2f vec1, Vec2f vec2){
+		return vec1.x * vec2.y - vec1.y * vec2.x;
 	}
 
 	public static float angleBetween(Vec2f vec1, Vec2f vec2) {

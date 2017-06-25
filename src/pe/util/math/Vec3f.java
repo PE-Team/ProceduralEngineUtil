@@ -59,6 +59,10 @@ public class Vec3f {
 		this.z /= length;
 		return this;
 	}
+	
+	public Vec2f xy(){
+		return new Vec2f(x, y);
+	}
 
 	public float length() {
 		return (float) Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);

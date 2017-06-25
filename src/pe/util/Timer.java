@@ -26,57 +26,71 @@ package pe.util;
 public class Timer {
 
 	/**
-	 * Represents the time that <code>start</code> was called in seconds.
+	 * Represents whether the timer has started or not. Default value is
+	 * <code>false</code>.
 	 * 
 	 * @see #start()
 	 * 
 	 * @since 1.0
 	 */
-	private long startTime;
+	private boolean started = false;
+
+	/**
+	 * Represents the time that <code>start</code> was called in seconds.
+	 * Default value is <code>Long.MAX_VALUE</code>.
+	 * 
+	 * @see #start()
+	 * 
+	 * @since 1.0
+	 */
+	private long startTime = Long.MAX_VALUE;
 
 	/**
 	 * Represents the time since either <code>start</code> or
-	 * <code>getDelta</code> was called in seconds.
+	 * <code>getDelta</code> was called in seconds. Default value is <code>Long.MAX_VALUE</code>.
 	 * 
 	 * @see #getDelta()
 	 * @see #start()
 	 * 
 	 * @since 1.0
 	 */
-	private long lastDelta;
+	private long lastDelta = Long.MAX_VALUE;
 
 	/**
 	 * Represents the time since either <code>start</code> was called or since
-	 * <code>secondPassed</code> returned <code>true</code> in seconds.
+	 * <code>secondPassed</code> returned <code>true</code> in seconds. Default
+	 * value is <code>Long.MAX_VALUE</code>.
 	 * 
 	 * @see #secondPassed()
 	 * @see #start()
 	 * 
 	 * @since 1.0
 	 */
-	private long lastSecond;
+	private long lastSecond = Long.MAX_VALUE;
 
 	/**
 	 * Represents the time since either <code>start</code> was called or since
-	 * <code>delayPassed</code> returned <code>true</code> in seconds.
+	 * <code>delayPassed</code> returned <code>true</code> in seconds. Default
+	 * value is <code>Long.MAX_VALUE</code>.
 	 * 
 	 * @see #delayPassed()
 	 * @see #start()
 	 * 
 	 * @since 1.0
 	 */
-	private long lastDelay;
+	private long lastDelay = Long.MAX_VALUE;
 
 	/**
 	 * Represents the time required since <code>lastDelay</code> for
-	 * <code>delayPassed</code> to return <code>true</code>.
+	 * <code>delayPassed</code> to return <code>true</code>. Default value is
+	 * <code>Long.MAX_VALUE</code>.
 	 * 
 	 * @see #delayPassed()
 	 * @see #lastDelay
 	 * 
 	 * @since 1.0
 	 */
-	private long delay;
+	private long delay = Long.MAX_VALUE;
 
 	/**
 	 * Default Class Constructor. Calling <code>start</code> after constructing
@@ -122,7 +136,7 @@ public class Timer {
 	 *         <code>lastDelay</code>; <code>false</code> otherwise.
 	 * 
 	 * @throws NullPointerException
-	 *                if <code>start</code> is not called before this method.
+	 *             if <code>start</code> is not called before this method.
 	 * 
 	 * @see #delay
 	 * @see #lastDelay
@@ -133,6 +147,33 @@ public class Timer {
 		long result = System.nanoTime() - lastDelay;
 		if (result > delay) {
 			lastDelay = System.nanoTime();
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Returns <code>true</code> if an amount of time equal to or greater than
+	 * <code>delay</code> has passed since the last time <code>lastDelay</code>
+	 * was updated. If it returns <code>true</code>, then <code>lastDelay</code>
+	 * is not automatically set to <code>System.nanoTime()</code>.
+	 * 
+	 * @return <code>true</code> if an amount of time of at least
+	 *         <code>delay</code> in seconds has passed since
+	 *         <code>lastDelay</code>; <code>false</code> otherwise.
+	 * 
+	 * @throws NullPointerException
+	 *             if <code>start</code> is not called before this method.
+	 * 
+	 * @see #delay
+	 * @see #lastDelay
+	 * 
+	 * @since 1.0
+	 */
+	public boolean delayPassedNoReset() {
+		long result = System.nanoTime() - lastDelay;
+		if (result > delay) {
 			return true;
 		} else {
 			return false;
@@ -151,9 +192,9 @@ public class Timer {
 	}
 
 	/**
-	 * Returns the amount of time in seconds between <code>System.nanoTime()</code>
-	 * and <code>lastDelta</code>, and then sets <code>lastDelta</code> to be
-	 * equal to <code>System.nanoTime()</code>.
+	 * Returns the amount of time in seconds between
+	 * <code>System.nanoTime()</code> and <code>lastDelta</code>, and then sets
+	 * <code>lastDelta</code> to be equal to <code>System.nanoTime()</code>.
 	 * 
 	 * @return The time in seconds since the last call of <code>getDelta</code>.
 	 * 
@@ -189,8 +230,8 @@ public class Timer {
 
 	/**
 	 * Returns the amount of time that has passed between
-	 * <code>System.nanoTime()</code> and <code>startTime</code> in seconds. This
-	 * is also equal to the time since <code>start</code> was called.
+	 * <code>System.nanoTime()</code> and <code>startTime</code> in seconds.
+	 * This is also equal to the time since <code>start</code> was called.
 	 * 
 	 * @return The time since the Timer was started
 	 * 
@@ -253,11 +294,9 @@ public class Timer {
 
 	/**
 	 * This method must be called before using any non-static methods within
-	 * this class except setter methods. Not calling this method will throw a
-	 * <code>NullPointerException</code> if any of the non-static and non-setter
-	 * methods are called.Starts the timer by setting <code>startTime</code>,
-	 * <code>lastDelta</code>, <code>lastSecond</code>, and
-	 * <code>lastDelay</code>, and will be initially equal to one another.
+	 * this class except setter methods. Starts the timer by setting
+	 * <code>startTime</code>, <code>lastDelta</code>, <code>lastSecond</code>,
+	 * and <code>lastDelay</code>, and will be initially equal to one another.
 	 * <code>lastDelta</code>, <code>lastSecond</code>, and
 	 * <code>lastDelay</code> are initially set to be equal to
 	 * <code>startTime</code> which is set to be <code>System.nanoTime()</code>.
@@ -270,9 +309,40 @@ public class Timer {
 	 * @since 1.0
 	 */
 	public void start() {
-		startTime = System.nanoTime();
-		lastDelta = startTime;
-		lastSecond = startTime;
-		lastDelay = startTime;
+		if (!started) {
+			startTime = System.nanoTime();
+			lastDelta = startTime;
+			lastSecond = startTime;
+			lastDelay = startTime;
+		}
+		started = true;
+	}
+
+	/**
+	 * Restarts the timer. Effectively the same as calling <code>stop()</code>
+	 * and then <code>start()</code>.
+	 * 
+	 * @see #stop()
+	 * @see #start()
+	 *
+	 * @since 1.0
+	 */
+	public void restart() {
+		stop();
+		start();
+	}
+
+	/**
+	 * Sets the <code>started</code> value for the timer to false. Also sets the
+	 * timer back to its default state.
+	 * 
+	 * @since 1.0
+	 */
+	public void stop() {
+		started = false;
+		startTime = Long.MAX_VALUE;
+		lastDelta = Long.MAX_VALUE;
+		lastSecond = Long.MAX_VALUE;
+		lastDelay = Long.MAX_VALUE;
 	}
 }
