@@ -7,7 +7,17 @@ public class Maths {
 	/**
 	 * The value of the square root of 2 as a float.
 	 */
-	public static final float SQRT_2 = 1.41421356237f;
+	public static final float SQRT_2 = 				1.41421356237f;
+	public static final float RAD_TO_DEG_MULT = 	57.2957795131f;
+	public static final float DEG_TO_RAD_MULT = 	0.01745329252f;
+	
+	public static float toDeg(float radians){
+		return radians * RAD_TO_DEG_MULT;
+	}
+	
+	public static float toRad(float degrees){
+		return degrees * DEG_TO_RAD_MULT;
+	}
 
 	public static int LCM(int a, int b) {
 		return a / GCF(a, b) * b;
