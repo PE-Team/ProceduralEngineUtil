@@ -4,13 +4,9 @@ import java.nio.FloatBuffer;
 
 public class Vec2f {
 
-	/**
-	 * The zero vector for 2 dimensions. Has values <code>x = 0</code> and
-	 * <code>y = 0</code>.
-	 * 
-	 * @since 1.0
-	 */
-	public static final Vec2f ZERO = new Vec2f(0, 0);
+	public static Vec2f zero(){
+		return new Vec2f(0f, 0f);
+	}
 
 	public float x, y;
 

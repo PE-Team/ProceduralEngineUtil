@@ -3,14 +3,10 @@ package pe.util.math;
 import java.nio.FloatBuffer;
 
 public class Vec4f {
-
-	/**
-	 * The zero vector for 4 dimensions. Has the values:
-	 * <code>{0, 0, 0, 0}</code>.
-	 * 
-	 * @since 1.0
-	 */
-	public static final Vec4f ZERO = new Vec4f(0f, 0f, 0f, 0f);
+	
+	public static Vec4f zero(){
+		return new Vec4f(0f, 0f, 0f, 0f);
+	}
 
 	public float x, y, z, w;
 
