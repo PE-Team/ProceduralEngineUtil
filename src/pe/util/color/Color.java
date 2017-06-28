@@ -1,5 +1,6 @@
 package pe.util.color;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 import pe.util.math.Maths;
@@ -721,6 +722,12 @@ public class Color {
 		buffer.put(r).put(g).put(b).put(a);
 		return buffer;
 	}
+	
+	public ByteBuffer putInBuffer4Byte(ByteBuffer buffer) {
+		this.toInt();
+		buffer.put((byte) (r / 2) ).put((byte) (g / 2) ).put((byte) (b / 2) ).put((byte) (a / 2) );
+		return buffer;
+	}
 
 	public FloatBuffer putInBuffer4C(FloatBuffer buffer) {
 		this.toDecimal();
@@ -736,13 +743,13 @@ public class Color {
 
 		switch (colorMode) {
 		case INT:
-			this.r = 255 - r;
-			this.g = 255 - g;
-			this.b = 255 - b;
+			this.r = 255f - r;
+			this.g = 255f - g;
+			this.b = 255f - b;
 		case FLOAT:
-			this.r = 1 - r;
-			this.g = 1 - g;
-			this.b = 1 - b;
+			this.r = 1f - r;
+			this.g = 1f - g;
+			this.b = 1f - b;
 			break;
 		}
 
@@ -760,9 +767,9 @@ public class Color {
 		if (colorMode == FLOAT)
 			return this;
 
-		this.r /= 255;
-		this.g /= 255;
-		this.b /= 255;
+		this.r /= 255f;
+		this.g /= 255f;
+		this.b /= 255f;
 		this.colorMode = FLOAT;
 		return this;
 	}
@@ -771,8 +778,8 @@ public class Color {
 		if (colorMode == INT)
 			return this;
 
-		this.r *= 255;
-		this.g *= 255;
+		this.r *= 255f;
+		this.g *= 255f;
 		this.b *= 255;
 		this.colorMode = INT;
 		return this;
@@ -784,13 +791,13 @@ public class Color {
 
 		switch (colorMode) {
 		case INT:
-			this.r = 255 - r;
-			this.g = 255 - g;
-			this.b = 255 - b;
+			this.r = 255f - r;
+			this.g = 255f - g;
+			this.b = 255f - b;
 		case FLOAT:
-			this.r = 1 - r;
-			this.g = 1 - g;
-			this.b = 1 - b;
+			this.r = 1f - r;
+			this.g = 1f - g;
+			this.b = 1f - b;
 			break;
 		}
 
