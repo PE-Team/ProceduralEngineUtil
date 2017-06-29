@@ -725,7 +725,7 @@ public class Color {
 	
 	public ByteBuffer putInBuffer4Byte(ByteBuffer buffer) {
 		this.toInt();
-		buffer.put((byte) (r / 2) ).put((byte) (g / 2) ).put((byte) (b / 2) ).put((byte) (a / 2) );
+		buffer.put((byte) r).put((byte) g).put((byte) b).put((byte) a);
 		return buffer;
 	}
 
