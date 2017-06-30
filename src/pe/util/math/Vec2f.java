@@ -4,7 +4,7 @@ import java.nio.FloatBuffer;
 
 public class Vec2f {
 
-	public static Vec2f zero(){
+	public static Vec2f zero() {
 		return new Vec2f(0f, 0f);
 	}
 
@@ -14,8 +14,8 @@ public class Vec2f {
 		this.x = 0;
 		this.y = 0;
 	}
-	
-	public Vec2f(Vec2f vec){
+
+	public Vec2f(Vec2f vec) {
 		this.x = vec.x;
 		this.y = vec.y;
 	}
@@ -46,8 +46,8 @@ public class Vec2f {
 		Vec2f vec = (Vec2f) vector;
 		return x == vec.x && y == vec.y;
 	}
-	
-	public static Vec2f mul(Vec2f vec, float scale){
+
+	public static Vec2f mul(Vec2f vec, float scale) {
 		return new Vec2f(vec.x * scale, vec.y * scale);
 	}
 
@@ -55,6 +55,17 @@ public class Vec2f {
 		return new Vec2f(vec2.x + vec1.x, vec2.y + vec1.y);
 	}
 
+	/**
+	 * Subtracts the first vector from the second.
+	 * 
+	 * @param vec1
+	 *            The vector to subtract.
+	 * @param vec2
+	 *            The vector which is being subtracted from.
+	 * @return The difference between <code>vec2</code> and <code>vec1</code>.
+	 * 
+	 * @since 1.0
+	 */
 	public static Vec2f subtract(Vec2f vec1, Vec2f vec2) {
 		return new Vec2f(vec2.x - vec1.x, vec2.y - vec1.y);
 	}
@@ -66,15 +77,15 @@ public class Vec2f {
 	public static Vec3f cross(Vec2f vec1, Vec2f vec2) {
 		return new Vec3f(0, 0, vec1.x * vec2.y - vec1.y * vec2.x);
 	}
-	
-	public static float crossArea(Vec2f vec1, Vec2f vec2){
+
+	public static float crossArea(Vec2f vec1, Vec2f vec2) {
 		return vec1.x * vec2.y - vec1.y * vec2.x;
 	}
 
 	public static float angleBetween(Vec2f vec1, Vec2f vec2) {
 		return (float) Math.toDegrees(Math.acos((dot(vec1, vec2)) / (vec1.length() * vec2.length())));
 	}
-	
+
 	public static double radiansBetween(Vec2f vec1, Vec2f vec2) {
 		return Math.acos((dot(vec1, vec2)) / (vec1.length() * vec2.length()));
 	}
@@ -85,18 +96,19 @@ public class Vec2f {
 		this.y /= length;
 		return this;
 	}
-	
-	public static Vec2f projectOnto(Vec2f direction, Vec2f vec){
+
+	public static Vec2f projectOnto(Vec2f direction, Vec2f vec) {
 		Vec2f unitDir = (new Vec2f(direction.x, direction.y)).unit();
 		float dot = Vec2f.dot(vec, unitDir);
-		
+
 		return unitDir.mul(dot);
 	}
 
 	/**
 	 * Inverts a vector so that it points in the opposite direction. More
-	 * specifically, multiplies each component of the vector by <code>-1</code>.
-	 * This is effectively the same as <code>vector.mul(-1)</code>.
+	 * specifically, this multiplies each component of the vector by
+	 * <code>-1</code>. This is effectively the same as
+	 * <code>vector.mul(-1)</code>.
 	 * 
 	 * @return The vector pointed in the opposite direction.
 	 * 
@@ -108,6 +120,24 @@ public class Vec2f {
 		this.x = -x;
 		this.y = -y;
 		return this;
+	}
+
+	/**
+	 * Returns the invert of this vector as a new vector object. The invert of
+	 * this vector is the vector in the opposite direction of this one. More
+	 * specifically, this multiplies each component of the vector by
+	 * <code>-1</code>. This is effectively the same as
+	 * <code>Vec2f.mul(vector, -1)</code>.
+	 * 
+	 * @return A new vector object with an opposite direction but equal
+	 *         magnitude.
+	 * 
+	 * @see #mul(Vec2f, float)
+	 * 
+	 * @since 1.0
+	 */
+	public Vec2f negation() {
+		return new Vec2f(-x, -y);
 	}
 
 	/**

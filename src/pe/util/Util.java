@@ -72,18 +72,14 @@ public class Util {
 		return count;
 	}
 	
-	public static boolean isInRectangle(Vec2f position, Vec2f size, Vec2f center, float rotation, Vec2f point){
-		point = Mat3f.mul(new Mat3f().translate(Vec2f.mul(center, -1)).rotate(-rotation).translate(center), new Vec3f(point, 1.0f)).xy();
+	public static boolean isInRectangle(Vec2f position, Vec2f positionOffset, Vec2f size, Vec2f rotationOffset, float rotation, Vec2f point){
+		Vec2f totalRotOffset = Vec2f.add(position, rotationOffset);
+		Vec2f totalPos = Vec2f.subtract(positionOffset, position);
+		point = Mat3f.mul(new Mat3f().translate(totalRotOffset.negation()).rotate(-rotation).translate(totalRotOffset), new Vec3f(point, 1.0f)).xy();
 		
-		Vec2f B = new Vec2f(position);
-		B.x += size.x;
-		
-		Vec2f D = new Vec2f(position);
-		D.y += size.y;
-		
-		Vec2f AP = Vec2f.subtract(position, point);
-		Vec2f AB = Vec2f.subtract(position, B);
-		Vec2f AD = Vec2f.subtract(position, D);
+		Vec2f AP = Vec2f.subtract(totalPos, point);
+		Vec2f AB = new Vec2f(size.x, 0);
+		Vec2f AD = new Vec2f(0, size.y);
 		
 		float APAB = Vec2f.dot(AP, AB);
 		float ABAB = Vec2f.dot(AB, AB);
